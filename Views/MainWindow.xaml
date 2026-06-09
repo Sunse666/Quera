@@ -1,0 +1,139 @@
+<Window x:Class="Quera.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="Quera"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        Topmost="True"
+        ShowInTaskbar="False"
+        WindowStartupLocation="CenterScreen"
+        UseLayoutRounding="True"
+        Width="680"
+        SizeToContent="Height"
+        MaxHeight="700">
+
+    <WindowChrome.WindowChrome>
+        <WindowChrome GlassFrameThickness="0"
+                      CornerRadius="20"
+                      ResizeBorderThickness="0"
+                      CaptionHeight="0"/>
+    </WindowChrome.WindowChrome>
+
+    <Border x:Name="OuterBorder"
+            Background="#B216213E"
+            CornerRadius="20"
+            SizeChanged="OnOuterBorderSizeChanged">
+
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="50"
+                              ShadowDepth="0"
+                              Opacity="0.6"
+                              Color="#000000"/>
+        </Border.Effect>
+
+        <Grid Margin="12">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- Row 0: Search card (always visible) -->
+            <Border Grid.Row="0"
+                    Background="#0DFFFFFF"
+                    BorderBrush="#12FFFFFF"
+                    BorderThickness="1"
+                    CornerRadius="14"
+                    Padding="14,12">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Column="0"
+                               Text="🔍"
+                               FontSize="17"
+                               FontFamily="Segoe UI Emoji"
+                               Opacity="0.5"
+                               VerticalAlignment="Center"
+                               Margin="0,0,10,0"/>
+
+                    <TextBox x:Name="SearchTextBox"
+                             Grid.Column="1"
+                             Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                             Background="Transparent"
+                             BorderThickness="0"
+                             Foreground="#FFFFFF"
+                             FontSize="17"
+                             CaretBrush="#D97035"
+                             VerticalAlignment="Center"
+                             FontFamily="Microsoft YaHei UI"/>
+
+                    <Border Grid.Column="2"
+                            Background="#12FFFFFF"
+                            CornerRadius="5"
+                            Padding="7,3"
+                            VerticalAlignment="Center">
+                        <TextBlock Text="ESC 关闭"
+                                   Foreground="#667788"
+                                   FontSize="10"/>
+                    </Border>
+                </Grid>
+            </Border>
+
+            <!-- Row 1: Results card (hidden when empty) -->
+            <Border Grid.Row="1"
+                    Background="#0DFFFFFF"
+                    BorderBrush="#12FFFFFF"
+                    BorderThickness="1"
+                    CornerRadius="14"
+                    Padding="4"
+                    Margin="0,10,0,0"
+                    Visibility="{Binding HasSearchText, Converter={StaticResource BoolToVisibility}}">
+
+                <ListView x:Name="ResultsListView"
+                          ItemsSource="{Binding Results}"
+                          SelectedIndex="{Binding SelectedIndex, Mode=TwoWay}"
+                          Background="Transparent"
+                          BorderThickness="0"
+                          ItemTemplate="{StaticResource ResultItemTemplate}"
+                          VirtualizingPanel.ScrollUnit="Pixel"
+                          ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                          ScrollViewer.VerticalScrollBarVisibility="Auto"
+                          MaxHeight="540">
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem" BasedOn="{StaticResource {x:Type ListViewItem}}"/>
+                    </ListView.ItemContainerStyle>
+                </ListView>
+            </Border>
+
+            <!-- Row 2: Status bar (hidden when empty) -->
+            <Border Grid.Row="2"
+                    Padding="8,8,8,4"
+                    Margin="0,4,0,0"
+                    Visibility="{Binding HasSearchText, Converter={StaticResource BoolToVisibility}}">
+                <DockPanel>
+                    <StackPanel DockPanel.Dock="Left" Orientation="Horizontal">
+                        <TextBlock Foreground="#556677" FontSize="10">
+                            <Run Text="↑↓ 导航"/>
+                            <Run Text="  "/>
+                            <Run Text="Enter 执行"/>
+                            <Run Text="  "/>
+                            <Run Text="Ctrl+, 配置"/>
+                        </TextBlock>
+                    </StackPanel>
+                    <TextBlock DockPanel.Dock="Right"
+                               Text="{Binding StatusText}"
+                               Foreground="#556677"
+                               FontSize="10"/>
+                </DockPanel>
+            </Border>
+        </Grid>
+    </Border>
+</Window>
