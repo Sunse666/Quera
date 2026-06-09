@@ -1,13 +1,17 @@
 # Quera
 
 <p align="center">
+  <img src="assets/logo/logo.png" alt="Quera Logo" width="128">
+</p>
+
+<p align="center">
   <strong>Windows 键盘快捷启动器</strong>
 </p>
 
 <p align="center">
   <img src="https://img.shields.io/badge/Platform-Windows-blue?style=flat-square">
   <img src="https://img.shields.io/badge/Framework-.NET%208%20WPF-purple?style=flat-square">
-  <img src="https://img.shields.io/badge/License-MIT-green?style=flat-square">
+  <img src="https://img.shields.io/badge/License-GPL%203.0-green?style=flat-square">
 </p>
 
 ## 简介
