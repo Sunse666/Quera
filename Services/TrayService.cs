@@ -6,12 +6,17 @@ namespace Quera.Services;
 public class TrayService : ITrayService, IDisposable
 {
     private NotifyIcon? _trayIcon;
+    private Icon? _appIcon;
 
     public void Create(Window owner)
     {
+        var iconUri = new Uri("pack://application:,,,/icon.ico");
+        var streamInfo = System.Windows.Application.GetResourceStream(iconUri);
+        _appIcon = new Icon(streamInfo!.Stream);
+
         _trayIcon = new NotifyIcon
         {
-            Icon = SystemIcons.Application,
+            Icon = _appIcon,
             Text = "Quera",
             Visible = true
         };
@@ -46,5 +51,7 @@ public class TrayService : ITrayService, IDisposable
     {
         _trayIcon?.Dispose();
         _trayIcon = null;
+        _appIcon?.Dispose();
+        _appIcon = null;
     }
 }
