@@ -46,6 +46,7 @@ ui:
   font_size_search: 17
   font_size_result_name: 14
   font_size_result_desc: 11
+  max_visible_items: 4
   item_height: 44
   show_icons: true
   show_type_badge: true

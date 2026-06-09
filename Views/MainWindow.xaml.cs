@@ -27,6 +27,7 @@ public partial class MainWindow : Window
 
         Width = cfg.Current.Width;
         Opacity = cfg.Current.Opacity;
+        ResultsListView.MaxHeight = cfg.Current.UI.MaxVisibleItems * cfg.Current.UI.ItemHeight;
     }
 
     private void OnSourceInitialized(object? sender, EventArgs e)

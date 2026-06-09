@@ -75,7 +75,7 @@
                           Background="Transparent" BorderThickness="0"
                           ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                           ScrollViewer.VerticalScrollBarVisibility="Hidden"
-                          MaxHeight="540" MinHeight="40">
+                          MinHeight="40">
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <Border CornerRadius="8" Padding="10,7"

@@ -111,6 +111,7 @@ public class ConfigService : IConfigService
             cfg.UI.ShowIcons = raw.UI.ShowIcons ?? cfg.UI.ShowIcons;
             cfg.UI.ShowTypeBadge = raw.UI.ShowTypeBadge ?? cfg.UI.ShowTypeBadge;
             cfg.UI.ShowStatusBar = raw.UI.ShowStatusBar ?? cfg.UI.ShowStatusBar;
+            cfg.UI.MaxVisibleItems = raw.UI.MaxVisibleItems ?? cfg.UI.MaxVisibleItems;
         }
 
         if (raw.Terminal != null)
@@ -232,6 +233,7 @@ public class ConfigService : IConfigService
         public bool? ShowIcons { get; set; }
         public bool? ShowTypeBadge { get; set; }
         public bool? ShowStatusBar { get; set; }
+        public int? MaxVisibleItems { get; set; }
     }
 
     private class YamlTerminal
