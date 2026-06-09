@@ -1,210 +1,198 @@
 # Quera
-<p align="center"> <img src="assets/logo/logo.png" alt="Quera Logo" width="128"> </p><p align="center"> <strong>用于快捷启动</strong> </p><p align="center"> <img src="https://img.shields.io/badge/Platform-Windows-blue?style=flat-square" alt="Platform"> <img src="https://img.shields.io/badge/Engine-WebView2-brightgreen?style=flat-square" alt="Engine"> </p>
 
+<p align="center">
+  <strong>Keyboard-driven launcher for Windows</strong>
+</p>
 
-## ✨ 简介
-- 基于 WebView2 的 Windows 快速启动器，追求极致的轻量与高效，通过全局热键一键唤出，快速搜索并启动应用、文件、命令、书签，提升工作效率。
+<p align="center">
+  <img src="https://img.shields.io/badge/Platform-Windows-blue?style=flat-square">
+  <img src="https://img.shields.io/badge/Framework-.NET%208%20WPF-purple?style=flat-square">
+  <img src="https://img.shields.io/badge/License-MIT-green?style=flat-square">
+</p>
 
+## Introduction
 
-## 🖼️ 截图
-<p align="center"> <img src="assets/Screenshot.png" alt="Screenshot"> </p>
+Quera is a keyboard-driven application launcher for Windows. Press a global hotkey to bring up the search window, type a few characters, and instantly find and launch apps, files, commands, bookmarks, and more. Built with .NET 8 WPF — no WebView required.
 
+## Features
 
-## 🚀 功能特性
+- **Global Hotkey** — Toggle visibility with a single keystroke (default `Alt + Space`)
+- **File Search** — Auto-indexes Start Menu and custom directories
+- **Custom Commands** — `shell:`, `cmd:`, `ps:`, `run:` execution with optional admin elevation
+- **Bookmarks** — Quick URL access by keyword
+- **Search Engines** — `keyword query` syntax (e.g., `g hello world`)
+- **Folder Shortcuts** — Keyword to open a specific directory
+- **Paginated Results** — `Tab` / `Shift+Tab` to flip pages
+- **Auto-hide on Blur** — Disappears when you click away
+- **System Tray** — Lives in the tray, right-click for menu
+- **Highly Configurable** — 70+ settings in YAML: colors, fonts, layout, shortcuts, and more
 
-### 🔍 全局搜索
-- 一键搜索应用程序、文件、文件夹
-- 自动索引开始菜单程序与自定义目录
-- 支持模糊匹配，快速定位目标
+## Keyboard Shortcuts
 
-### ⚡ 自定义命令
-- 创建自定义快捷命令
-- 支持 Shell、CMD、PowerShell 多种执行方式
-- 可配置管理员权限运行
+| Key | Action |
+|---|---|
+| `Alt + Space` | Show / Hide |
+| `↑` `↓` | Navigate results |
+| `Enter` | Execute selected item |
+| `Tab` | Next page |
+| `Shift + Tab` | Previous page |
+| `Esc` | Hide window |
+| `Ctrl + ,` | Open config file |
+| `Ctrl + R` | Reload config |
 
-### 🔗 书签管理
-- 快速访问常用网页书签
-- 关键词触发，一键直达
+## Quick Start
 
-### 🌐 搜索引擎集成
-- 输入 关键词 + 空格 + 搜索词 直接搜索
-- 支持自定义多个搜索引擎
+1. Download and extract to any folder
+2. Run `Quera.exe`
+3. Press `Alt + Space` to open the search window
+4. (Optional) Edit `config.yaml` to customize
 
-### 📁 文件夹快捷方式
-- 配置常用文件夹快捷入口
-- 关键词快速打开目标目录
+## Configuration
 
-### ⌨️ 快捷键操作
+All settings are in `config.yaml`:
 
-> [!TIP]
-> |快捷键|功能|
-> |---|---|
-> |Alt + Space|唤出/隐藏窗口|
-> |↑ ↓|	选择导航结果|
-> |Enter|执行选中项|
-> |Tab|展开搜索引擎|
-> |Esc|	隐藏窗口|
-> |Ctrl + ,|打开配置文件|
-> |Ctrl + R|重新加载配置|
+```yaml
+settings:
+  hotkey: Alt+Space
+  width: 680
+  opacity: 96
+  max_results: 30
+  autostart: false
+  hide_on_deactivate: true
+  hide_delay_ms: 200
+  show_on_startup: false
 
-### 📌 系统托盘
-- 最小化后自动收入系统托盘
-- 右键托盘图标可快速打开、配置或退出
+window:
+  always_on_top: true
 
-### 🚀 开机自启动
-- 支持配置开机自动启动
-- 通过配置文件一键开关
+colors:
+  background: "#B216213E"
+  search_card: "#0DFFFFFF"
+  search_border: "#12FFFFFF"
+  result_card: "#CC1A1A2E"
+  result_border: "#33FFFFFF"
+  result_hover: "#18FFFFFF"
+  result_selected_start: "#D97035"
+  result_selected_end: "#E8955A"
+  text_primary: "#FFFFFF"
+  text_secondary: "#8899AA"
+  text_muted: "#556677"
+  accent: "#D97035"
 
+search_box:
+  placeholder: "Search apps, files, commands..."
+  icon: "🔍"
+  esc_hint: "ESC to close"
 
-## 📦 安装与使用
+results:
+  padding_h: 10
+  padding_v: 7
+  margin: 1
+  icon_size: 20
+  badge_font_size: 9
 
-### 系统要求
-- 操作系统：Windows 10 / 11
-- 运行时：Microsoft Edge WebView2 Runtime
+layout:
+  outer_margin: 12
+  card_gap: 10
+  search_padding: 14
+  results_padding: 6
 
-### 快速开始
+shortcuts:
+  next_page: Tab
+  prev_page: Shift+Tab
+  execute: Enter
+  hide: Escape
+  open_config: "Ctrl+,"
+  reload_config: Ctrl+R
 
-1. 从 Releases 页面下载最新版本
-2. 解压到任意目录
-3. 运行 Quera.exe
-4. 按下 Alt + Space 唤出搜索窗口
+search:
+  match_mode: contains
+  include_directories: false
+  max_depth: -1
 
-### 目录结构
+exclude:
+  paths: [~/AppData, ~/.git]
+  patterns: ["*.tmp", "*.log"]
 
-```
-Quera/
-├── Quera.exe       # 主程序
-├── config.ini       # 配置文件
-└── assets/icon/   # 图标
-```
+cache:
+  enabled: true
+  refresh_on_start: true
+  max_files: 50000
 
+ui:
+  border_radius: 20
+  font_family: "Microsoft YaHei UI"
+  font_size_search: 17
+  font_size_result_name: 14
+  font_size_result_desc: 11
+  max_visible_items: 10
+  item_height: 44
+  show_icons: true
+  show_type_badge: true
+  show_status_bar: true
 
-## ⚙️ 配置说明
+terminal:
+  default: cmd
+  admin_default: powershell
 
-配置文件为程序目录下的 config.ini，支持以下配置段：
+paths:
+  - ~/Desktop
+  - C:/Tools
 
-### 基础设置 
+file_types:
+  - .exe
+  - .lnk
+  - .bat
+  - .ps1
 
-```
-[settings]
-hotkey = Alt+Space    # 全局热键
-width = 680                # 窗口宽度
-height = 480               # 窗口高度
-opacity = 95               # 窗口透明度
-max_results = 30      # 最大显示结果数
-autostart = true        # 开机自启动
-```
+commands:
+  - keyword: cmd
+    name: Command Prompt
+    action: run:cmd.exe
+    icon: "⚡"
+    admin: false
 
-### 搜索路径 
+bookmarks:
+  - keyword: gh
+    name: GitHub
+    url: https://github.com
+    icon: "🔗"
 
-```
-[path]
-# 每行一个路径，支持绝对路径和 ~ 表示用户目录
-D:\Tools
-~\Downloads
-```
+folders:
+  - keyword: desk
+    name: Desktop
+    path: ~/Desktop
+    icon: "📁"
 
-### 文件类型 
+search_engines:
+  - keyword: g
+    name: Google
+    url: https://www.google.com/search?q={query}
+    icon: "🔍"
 
-```
-[filetype]
-# 每行一个扩展名
-.exe
-.lnk
-.bat
-.ps1
-```
-
-### 自定义命令
-
-```
-[command]
-keyword = calc
-name = 计算器
-action = run:calc.exe
-icon = 🧮
-```
-
-### 书签
-
-```
-[bookmark]
-keyword = gt
-name = GitHub
-url = https://github.com
-icon = .\assets\icon\github.png
-
-[bookmark]
-keyword = mail
-name = Gmail
-url = https://mail.google.com
-icon = M
-```
-
-### 搜索引擎
-
-```
-[search]
-keyword = gg
-name = Google
-url = https://www.google.com/search?q={query}
-icon = 🔍
-
-[search]
-keyword = bing
-name = bing
-url = https://www.baidu.com/s?wd={query}
-icon = 🔍
-
-[search]
-keyword = bili
-name = Bilibili
-url = https://search.bilibili.com/all?keyword={query}
-icon = .\assets\icon\bilibili.png
-```
-
-> [!NOTE]
-> 搜索引擎使用方法： 输入 gg hello world 后按 Enter，将使用 Google 搜索 "hello world"
-
-
-## 🛠️ 技术特点
-
-- 基于 Chromium WebView2 渲染引擎，界面现代风格
-- 智能缓存 文件索引，搜索响应迅速
-- 失焦自动隐藏，不打断工作流程
-- 托盘常驻，随时待命
-- 支持 高 DPI 显示器 适配
-
-
-## ❓ 常见问题
-
-### Q: 热键冲突怎么办？
-
-修改 config.ini 中的 hotkey 配置项，支持的修饰键：Ctrl、Alt、Shift、Win
-
-### Q: 如何添加自定义图标？
-
-图标支持 emoji 或本地图片路径（ico/png/jpg），例如：
-
-```
-icon = 🚀
-icon = ~\icons\myapp.png
+priority:
+  types: [command, bookmark, file, folder, search, search_hint]
+  extensions: [.exe, .lnk, .bat, .ps1]
+  custom_path_first: true
 ```
 
-### Q: 新配置未加载？
+## FAQ
 
-按 Ctrl + R 重新加载配置并刷新索引
+**Q: Hotkey conflict?** Change `settings.hotkey` in config. Supports Ctrl / Alt / Shift / Win modifiers.
 
-### Q: 如何设置开机自启动？
+**Q: Config changes not taking effect?** Press `Ctrl + R` to reload, or restart the app.
 
-在 config.ini 的 [settings] 部分添加：
+**Q: No file results?** Check that `paths` contains valid directories and `file_types` includes your target extensions.
 
-```
-autostart = true  # 开启自启动
-autostart = false # 关闭自启动
-```
+**Q: How to set custom icons?** Use emoji (e.g. `⚡`) or local image paths (ico/png/jpg).
 
-修改后重启程序生效
+## Tech Stack
+
+- .NET 8 WPF (native Windows framework, zero WebView dependency)
+- CommunityToolkit.Mvvm
+- YamlDotNet
+- Microsoft.Extensions.Hosting (DI container)
 
 ---
-<p align="center"> Made with 💚 by Quera </p>
+
+<p align="center">Made with 💚 by Quera</p>
