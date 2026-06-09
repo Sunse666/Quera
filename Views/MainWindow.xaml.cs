@@ -6,38 +6,28 @@ public partial class MainWindow : Window
 {
     private readonly MainViewModel _vm;
     private readonly DispatcherTimer _deactivateTimer;
-    private readonly IConfigService _cfg;
     private bool _needsCenter;
-
-    private const int ChromeOverhead = 150;
+    private double _anchorTop;
 
     public MainWindow(MainViewModel vm)
     {
         InitializeComponent();
         _vm = vm;
-        _cfg = AppServices.Services.GetRequiredService<IConfigService>();
+        var cfg = AppServices.Services.GetRequiredService<IConfigService>();
         DataContext = vm;
 
         _deactivateTimer = new DispatcherTimer
         {
-            Interval = TimeSpan.FromMilliseconds(_cfg.Current.HideDelayMs)
+            Interval = TimeSpan.FromMilliseconds(cfg.Current.HideDelayMs)
         };
         _deactivateTimer.Tick += OnDeactivateTimerTick;
 
         SourceInitialized += OnSourceInitialized;
         SizeChanged += OnSizeChanged;
         PreviewKeyDown += OnWindowPreviewKeyDown;
-        _vm.Results.CollectionChanged += (_, _) => UpdateHeight();
-        _vm.ConfigReloaded += c => Dispatcher.Invoke(() => ApplyConfig(c));
 
-        Width = _cfg.Current.Width;
-        Opacity = _cfg.Current.Opacity;
-        ApplyConfig(_cfg.Current);
-    }
-
-    private void ApplyConfig(ConfigData c)
-    {
-        ResultsListView.Height = c.UI.MaxVisibleItems * c.UI.ItemHeight;
+        Width = cfg.Current.Width;
+        Opacity = cfg.Current.Opacity;
     }
 
     private void OnSourceInitialized(object? sender, EventArgs e) => AcrylicHelper.ApplyBackdrop(this);
@@ -49,29 +39,20 @@ public partial class MainWindow : Window
             _needsCenter = false;
             var wa = System.Windows.SystemParameters.WorkArea;
             Left = wa.Left + (wa.Width - ActualWidth) / 2;
-            Top = wa.Top + (wa.Height - ActualHeight) / 2;
+            _anchorTop = wa.Top + wa.Height * 0.3;
         }
+        Top = _anchorTop;
     }
 
     public void ToggleVisibility()
     {
         if (IsVisible) { Hide(); _vm.IsVisible = false; return; }
-
         _vm.ResetSearch();
-        Height = 100;
         _needsCenter = true;
         Show();
         Activate();
         _vm.IsVisible = true;
         SearchTextBox.Focus();
-    }
-
-    private void UpdateHeight()
-    {
-        if (!_vm.HasSearchText || _vm.Results.Count == 0)
-            Height = 100;
-        else
-            Height = ChromeOverhead + (int)ResultsListView.Height;
     }
 
     protected override void OnDeactivated(EventArgs e) { base.OnDeactivated(e); _deactivateTimer.Start(); }
@@ -104,12 +85,7 @@ public partial class MainWindow : Window
     private void ExecAndHide()
     {
         var s = _vm.ExecuteSelected();
-        if (!string.IsNullOrEmpty(s))
-        {
-            _vm.SearchText = s;
-            SearchTextBox.Focus();
-            SearchTextBox.CaretIndex = SearchTextBox.Text.Length;
-        }
+        if (!string.IsNullOrEmpty(s)) { _vm.SearchText = s; SearchTextBox.Focus(); SearchTextBox.CaretIndex = SearchTextBox.Text.Length; }
         else { Hide(); _vm.IsVisible = false; }
     }
 }

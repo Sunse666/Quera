@@ -78,8 +78,12 @@ public partial class MainViewModel : ObservableObject
 
             var container = _searchService.Search(SearchText, _configService.Current, _configService.Current.MaxResults);
 
+            var maxVisible = _configService.Current.UI.MaxVisibleItems;
+            Log.Info($"MaxVisibleItems={maxVisible}, total={container.TotalCount}");
+            var displayItems = container.Items.Take(maxVisible).ToList();
+
             Results.Clear();
-            foreach (var item in container.Items)
+            foreach (var item in displayItems)
                 Results.Add(item);
 
             TotalCount = container.TotalCount;
@@ -92,7 +96,7 @@ public partial class MainViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"DoSearch: {ex}");
+            Log.Error("DoSearch failed", ex);
         }
     }
 

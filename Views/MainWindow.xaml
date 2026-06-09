@@ -12,7 +12,7 @@
         ShowInTaskbar="False"
         WindowStartupLocation="CenterScreen"
         UseLayoutRounding="True"
-        Width="680" Height="100">
+        Width="680" SizeToContent="Height">
 
     <WindowChrome.WindowChrome>
         <WindowChrome GlassFrameThickness="0"
@@ -74,8 +74,7 @@
                           SelectedIndex="{Binding SelectedIndex, Mode=TwoWay}"
                           Background="Transparent" BorderThickness="0"
                           ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                          ScrollViewer.VerticalScrollBarVisibility="Hidden"
-                          >
+                          ScrollViewer.VerticalScrollBarVisibility="Hidden">
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <Border CornerRadius="8" Padding="10,7"

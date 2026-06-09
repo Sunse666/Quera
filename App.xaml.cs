@@ -11,10 +11,10 @@ public partial class App : Application
     protected override void OnStartup(StartupEventArgs e)
     {
         AppDomain.CurrentDomain.UnhandledException += (_, ex) =>
-            Debug.WriteLine($"Unhandled: {ex.ExceptionObject}");
+            Log.Error($"Unhandled: {ex.ExceptionObject}");
         DispatcherUnhandledException += (_, ex) =>
         {
-            Debug.WriteLine($"Dispatcher: {ex.Exception}");
+            Log.Error($"Dispatcher: {ex.Exception}");
             ex.Handled = true;
         };
 
@@ -68,7 +68,7 @@ public partial class App : Application
         _ = Task.Run(async () =>
         {
             try { await indexService.BuildCacheAsync(cfg.SearchPaths, cfg.FileTypes); }
-            catch (Exception ex) { Debug.WriteLine($"Index build failed: {ex}"); }
+            catch (Exception ex) { Log.Error("Index build failed", ex); }
         });
 
         singleInstance.StartSignalListener(() =>

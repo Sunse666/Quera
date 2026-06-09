@@ -100,18 +100,18 @@ public class ConfigService : IConfigService
             cfg.Cache.MaxFiles = raw.Cache.MaxFiles ?? cfg.Cache.MaxFiles;
         }
 
-        if (raw.UI != null)
+        if (raw.Ui != null)
         {
-            cfg.UI.BorderRadius = raw.UI.BorderRadius ?? cfg.UI.BorderRadius;
-            cfg.UI.FontFamily = raw.UI.FontFamily ?? cfg.UI.FontFamily;
-            cfg.UI.FontSizeSearch = raw.UI.FontSizeSearch ?? cfg.UI.FontSizeSearch;
-            cfg.UI.FontSizeResultName = raw.UI.FontSizeResultName ?? cfg.UI.FontSizeResultName;
-            cfg.UI.FontSizeResultDesc = raw.UI.FontSizeResultDesc ?? cfg.UI.FontSizeResultDesc;
-            cfg.UI.ItemHeight = raw.UI.ItemHeight ?? cfg.UI.ItemHeight;
-            cfg.UI.ShowIcons = raw.UI.ShowIcons ?? cfg.UI.ShowIcons;
-            cfg.UI.ShowTypeBadge = raw.UI.ShowTypeBadge ?? cfg.UI.ShowTypeBadge;
-            cfg.UI.ShowStatusBar = raw.UI.ShowStatusBar ?? cfg.UI.ShowStatusBar;
-            cfg.UI.MaxVisibleItems = raw.UI.MaxVisibleItems ?? cfg.UI.MaxVisibleItems;
+            cfg.UI.BorderRadius = raw.Ui.BorderRadius ?? cfg.UI.BorderRadius;
+            cfg.UI.FontFamily = raw.Ui.FontFamily ?? cfg.UI.FontFamily;
+            cfg.UI.FontSizeSearch = raw.Ui.FontSizeSearch ?? cfg.UI.FontSizeSearch;
+            cfg.UI.FontSizeResultName = raw.Ui.FontSizeResultName ?? cfg.UI.FontSizeResultName;
+            cfg.UI.FontSizeResultDesc = raw.Ui.FontSizeResultDesc ?? cfg.UI.FontSizeResultDesc;
+            cfg.UI.ItemHeight = raw.Ui.ItemHeight ?? cfg.UI.ItemHeight;
+            cfg.UI.ShowIcons = raw.Ui.ShowIcons ?? cfg.UI.ShowIcons;
+            cfg.UI.ShowTypeBadge = raw.Ui.ShowTypeBadge ?? cfg.UI.ShowTypeBadge;
+            cfg.UI.ShowStatusBar = raw.Ui.ShowStatusBar ?? cfg.UI.ShowStatusBar;
+            cfg.UI.MaxVisibleItems = raw.Ui.MaxVisibleItems ?? cfg.UI.MaxVisibleItems;
         }
 
         if (raw.Terminal != null)
@@ -163,7 +163,7 @@ public class ConfigService : IConfigService
         public YamlSearch? Search { get; set; }
         public YamlExclude? Exclude { get; set; }
         public YamlCache? Cache { get; set; }
-        public YamlUI? UI { get; set; }
+        public YamlUI? Ui { get; set; }
         public YamlTerminal? Terminal { get; set; }
         public List<string>? Paths { get; set; }
         public List<string>? FileTypes { get; set; }

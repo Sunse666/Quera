@@ -18,4 +18,5 @@ global using Microsoft.Extensions.Logging;
 global using Quera.Models;
 global using Quera.Services;
 global using Quera.ViewModels;
+global using Quera.Helpers;
 global using Quera.Views;
