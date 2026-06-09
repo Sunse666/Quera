@@ -121,8 +121,10 @@ public class ConfigService : IConfigService
         }
 
         if (raw.Window != null)
+        {
             cfg.Window.AlwaysOnTop = raw.Window.AlwaysOnTop ?? cfg.Window.AlwaysOnTop;
             cfg.Window.CornerRadius = raw.Window.CornerRadius ?? cfg.Window.CornerRadius;
+        }
 
         if (raw.Icons != null)
         {
