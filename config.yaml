@@ -1,6 +1,6 @@
 settings:
   hotkey: Alt+Space
-  width: 680
+  width: 480
   opacity: 96
   max_results: 30
   autostart: false
@@ -26,8 +26,8 @@ colors:
   accent: "#D97035"
 
 search_box:
-  placeholder: "搜索应用、文件、命令..."
-  icon: "🔍"
+  placeholder: ""
+  icon: ""
   esc_hint: ""
 
 results:
@@ -87,7 +87,6 @@ terminal:
 
 paths:
   - ~/Desktop
-  - C:/Program Files (x86)
   - D:/Tools
 
 file_types:
@@ -116,22 +115,22 @@ folders:
     icon: "📁"
 
 search_engines:
-  - keyword: g
+  - keyword: shg
     name: Google
     url: https://www.google.com/search?q={query}
     icon: "🔍"
 
 priority:
   types:
-    - command
     - bookmark
     - file
+    - command
     - folder
     - search
     - search_hint
   extensions:
-    - .exe
     - .lnk
+    - .exe
     - .bat
     - .ps1
   custom_path_first: true
