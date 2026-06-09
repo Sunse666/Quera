@@ -12,6 +12,7 @@ public class ConfigData
     public bool ShowOnStartup { get; set; }
 
     public ColorConfig Colors { get; set; } = new();
+    public IconConfig Icons { get; set; } = new();
     public WindowConfig Window { get; set; } = new();
     public SearchBoxConfig SearchBox { get; set; } = new();
     public ResultsConfig Results { get; set; } = new();

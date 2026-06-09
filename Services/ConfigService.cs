@@ -122,6 +122,13 @@ public class ConfigService : IConfigService
 
         if (raw.Window != null)
             cfg.Window.AlwaysOnTop = raw.Window.AlwaysOnTop ?? cfg.Window.AlwaysOnTop;
+            cfg.Window.CornerRadius = raw.Window.CornerRadius ?? cfg.Window.CornerRadius;
+
+        if (raw.Icons != null)
+        {
+            cfg.Icons.EnableImageIcons = raw.Icons.EnableImageIcons ?? cfg.Icons.EnableImageIcons;
+            cfg.Icons.CacheIcons = raw.Icons.CacheIcons ?? cfg.Icons.CacheIcons;
+        }
 
         if (raw.SearchBox != null)
         {
@@ -198,6 +205,7 @@ public class ConfigService : IConfigService
         public YamlSettings? Settings { get; set; }
         public YamlColors? Colors { get; set; }
         public YamlWindow? Window { get; set; }
+        public YamlIcon? Icons { get; set; }
         public YamlSearchBox? SearchBox { get; set; }
         public YamlResults? Results { get; set; }
         public YamlLayout? Layout { get; set; }
@@ -287,6 +295,13 @@ public class ConfigService : IConfigService
     private class YamlWindow
     {
         public bool? AlwaysOnTop { get; set; }
+        public int? CornerRadius { get; set; }
+    }
+
+    private class YamlIcon
+    {
+        public bool? EnableImageIcons { get; set; }
+        public bool? CacheIcons { get; set; }
     }
 
     private class YamlSearchBox

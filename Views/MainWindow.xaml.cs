@@ -74,6 +74,9 @@ public partial class MainWindow : Window
             case Key.Escape: e.Handled = true; Hide(); _vm.IsVisible = false; break;
             case Key.Tab when Keyboard.Modifiers == ModifierKeys.Shift:
                 e.Handled = true; _vm.PrevPage(); break;
+            case Key.Tab when _vm.SelectedIndex >= 0 && _vm.SelectedIndex < _vm.Results.Count
+                && _vm.Results[_vm.SelectedIndex].Type == SearchResultType.SearchHint:
+                e.Handled = true; ExecAndHide(); break;
             case Key.Tab:
                 e.Handled = true; _vm.NextPage(); break;
             case Key.OemComma when Keyboard.Modifiers == ModifierKeys.Control:

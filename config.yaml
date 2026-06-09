@@ -10,6 +10,11 @@ settings:
 
 window:
   always_on_top: true
+  corner_radius: 20
+
+icons:
+  enable_image_icons: true
+  cache_icons: true
 
 colors:
   background: "#B216213E"

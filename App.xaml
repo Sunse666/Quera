@@ -6,6 +6,7 @@
         <ResourceDictionary>
             <converters:TypeToBadgeTextConverter x:Key="TypeToBadgeText"/>
             <converters:BoolToVisibilityConverter x:Key="BoolToVisibility"/>
+            <converters:IconToImageConverter x:Key="IconToImage"/>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Resources/Styles/DarkTheme.xaml"/>
             </ResourceDictionary.MergedDictionaries>
