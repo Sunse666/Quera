@@ -25,6 +25,7 @@ public partial class App : Application
             {
                 services.AddSingleton<IConfigService, ConfigService>();
                 services.AddSingleton<ISingleInstanceService, SingleInstanceService>();
+                services.AddSingleton<IHistoryService, HistoryService>();
                 services.AddSingleton<IFileIndexService, FileIndexService>();
                 services.AddSingleton<ISearchService, SearchService>();
                 services.AddSingleton<IExecutionService, ExecutionService>();

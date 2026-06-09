@@ -8,17 +8,19 @@ public partial class MainViewModel : ObservableObject
     private readonly ISearchService _searchService;
     private readonly IExecutionService _executionService;
     private readonly IFileIndexService _fileIndexService;
+    private readonly IHistoryService _history;
     private readonly DispatcherTimer _debounceTimer;
     private List<SearchResult> _allResults = new();
     private int _page;
     private int _pageSize;
 
-    public MainViewModel(IConfigService configService, ISearchService searchService, IExecutionService executionService, IFileIndexService fileIndexService)
+    public MainViewModel(IConfigService configService, ISearchService searchService, IExecutionService executionService, IFileIndexService fileIndexService, IHistoryService history)
     {
         _configService = configService;
         _searchService = searchService;
         _executionService = executionService;
         _fileIndexService = fileIndexService;
+        _history = history;
         _pageSize = _configService.Current.UI.MaxVisibleItems;
 
         _debounceTimer = new DispatcherTimer(TimeSpan.FromMilliseconds(60), DispatcherPriority.Normal, OnDebounceTick, Dispatcher.CurrentDispatcher);
@@ -147,6 +149,7 @@ public partial class MainViewModel : ObservableObject
     {
         if (SelectedIndex < 0 || SelectedIndex >= Results.Count) return null;
         var item = Results[SelectedIndex];
+        _history.RecordSelection(item.Name);
         return _executionService.Execute(item);
     }
 

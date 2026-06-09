@@ -76,13 +76,39 @@ public partial class MainWindow : Window
 
     public void ToggleVisibility()
     {
-        if (IsVisible) { Hide(); _vm.IsVisible = false; return; }
+        if (IsVisible) { FadeOut(); return; }
         _vm.ResetSearch();
         _needsCenter = true;
+        Opacity = 0;
         Show();
         Activate();
         _vm.IsVisible = true;
         SearchTextBox.Focus();
+        FadeIn();
+    }
+
+    private async void FadeIn()
+    {
+        for (double o = 0; o <= _cfg.Current.Opacity; o += 0.08)
+        {
+            Opacity = o;
+            await Task.Delay(12);
+        }
+        Opacity = _cfg.Current.Opacity;
+    }
+
+    private async void FadeOut()
+    {
+        var target = Opacity;
+        for (double o = target; o >= 0; o -= 0.1)
+        {
+            Opacity = o;
+            await Task.Delay(8);
+        }
+        Opacity = 0;
+        Hide();
+        _vm.IsVisible = false;
+        Opacity = _cfg.Current.Opacity;
     }
 
     protected override void OnDeactivated(EventArgs e) { base.OnDeactivated(e); _deactivateTimer.Start(); }

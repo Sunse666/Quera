@@ -97,7 +97,7 @@ file_types:
 
 commands:
   - keyword: cmd
-    name: 命令提示符
+    name: cmd
     action: run:cmd.exe
     icon: "⚡"
     admin: false
@@ -110,7 +110,7 @@ bookmarks:
 
 folders:
   - keyword: desk
-    name: 桌面
+    name: Desktop
     path: ~/Desktop
     icon: "📁"
 

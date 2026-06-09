@@ -191,6 +191,7 @@ public class ConfigService : IConfigService
         if (raw.Bookmarks != null) cfg.Bookmarks = raw.Bookmarks;
         if (raw.Folders != null) cfg.Folders = raw.Folders;
         if (raw.SearchEngines != null) cfg.SearchEngines = raw.SearchEngines;
+        if (raw.Aliases != null) cfg.Aliases = raw.Aliases;
 
         if (raw.Priority != null)
         {
@@ -223,6 +224,7 @@ public class ConfigService : IConfigService
         public List<BookmarkItem>? Bookmarks { get; set; }
         public List<FolderItem>? Folders { get; set; }
         public List<SearchEngine>? SearchEngines { get; set; }
+        public List<AliasItem>? Aliases { get; set; }
         public YamlPriority? Priority { get; set; }
     }
 

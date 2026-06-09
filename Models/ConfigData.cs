@@ -31,4 +31,5 @@ public class ConfigData
     public List<BookmarkItem> Bookmarks { get; set; } = new();
     public List<FolderItem> Folders { get; set; } = new();
     public List<SearchEngine> SearchEngines { get; set; } = new();
+    public List<AliasItem> Aliases { get; set; } = new();
 }
