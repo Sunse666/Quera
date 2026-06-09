@@ -9,6 +9,9 @@ public partial class MainViewModel : ObservableObject
     private readonly IExecutionService _executionService;
     private readonly IFileIndexService _fileIndexService;
     private readonly DispatcherTimer _debounceTimer;
+    private List<SearchResult> _allResults = new();
+    private int _page;
+    private int _pageSize;
 
     public MainViewModel(IConfigService configService, ISearchService searchService, IExecutionService executionService, IFileIndexService fileIndexService)
     {
@@ -16,28 +19,18 @@ public partial class MainViewModel : ObservableObject
         _searchService = searchService;
         _executionService = executionService;
         _fileIndexService = fileIndexService;
+        _pageSize = _configService.Current.UI.MaxVisibleItems;
 
         _debounceTimer = new DispatcherTimer(TimeSpan.FromMilliseconds(60), DispatcherPriority.Normal, OnDebounceTick, Dispatcher.CurrentDispatcher);
         _debounceTimer.Stop();
     }
 
-    [ObservableProperty]
-    private string _searchText = "";
-
-    [ObservableProperty]
-    private ObservableCollection<SearchResult> _results = new();
-
-    [ObservableProperty]
-    private int _selectedIndex;
-
-    [ObservableProperty]
-    private string _statusText = "就绪";
-
-    [ObservableProperty]
-    private int _totalCount;
-
-    [ObservableProperty]
-    private bool _isVisible;
+    [ObservableProperty] private string _searchText = "";
+    [ObservableProperty] private ObservableCollection<SearchResult> _results = new();
+    [ObservableProperty] private int _selectedIndex;
+    [ObservableProperty] private string _statusText = "就绪";
+    [ObservableProperty] private int _totalCount;
+    [ObservableProperty] private bool _isVisible;
 
     public bool HasSearchText => !string.IsNullOrWhiteSpace(SearchText);
 
@@ -60,39 +53,23 @@ public partial class MainViewModel : ObservableObject
         {
             if (!_fileIndexService.CacheBuilt)
             {
-                Results.Clear();
-                SelectedIndex = 0;
-                TotalCount = 0;
+                ClearAll();
                 StatusText = "正在索引...";
                 return;
             }
 
             if (string.IsNullOrWhiteSpace(SearchText))
             {
-                Results.Clear();
-                SelectedIndex = 0;
-                TotalCount = 0;
+                ClearAll();
                 StatusText = "就绪";
                 return;
             }
 
             var container = _searchService.Search(SearchText, _configService.Current, _configService.Current.MaxResults);
-
-            var maxVisible = _configService.Current.UI.MaxVisibleItems;
-            Log.Info($"MaxVisibleItems={maxVisible}, total={container.TotalCount}");
-            var displayItems = container.Items.Take(maxVisible).ToList();
-
-            Results.Clear();
-            foreach (var item in displayItems)
-                Results.Add(item);
-
+            _allResults = container.Items;
+            _page = 0;
             TotalCount = container.TotalCount;
-            SelectedIndex = 0;
-            StatusText = container.TotalCount == 0
-                ? "无结果"
-                : container.TotalCount > container.Items.Count
-                    ? $"{container.Items.Count}/{container.TotalCount} 个结果"
-                    : $"{container.Items.Count} 个结果";
+            ShowPage();
         }
         catch (Exception ex)
         {
@@ -100,18 +77,70 @@ public partial class MainViewModel : ObservableObject
         }
     }
 
+    private void ShowPage()
+    {
+        var skip = _page * _pageSize;
+        var items = _allResults.Skip(skip).Take(_pageSize).ToList();
+
+        Results.Clear();
+        foreach (var item in items) Results.Add(item);
+
+        SelectedIndex = 0;
+        var totalPages = (_allResults.Count + _pageSize - 1) / _pageSize;
+        StatusText = _allResults.Count == 0
+            ? "无结果"
+            : $"{_page + 1}/{totalPages} 页 ({TotalCount} 条)";
+    }
+
     [RelayCommand]
     private void SelectNext()
     {
-        if (Results.Count > 0)
-            SelectedIndex = (SelectedIndex + 1) % Results.Count;
+        if (Results.Count == 0) return;
+
+        if (SelectedIndex < Results.Count - 1)
+        {
+            SelectedIndex++;
+        }
+        else
+        {
+            var totalPages = (_allResults.Count + _pageSize - 1) / _pageSize;
+            _page = (_page + 1) % totalPages;
+            ShowPage();
+        }
     }
 
     [RelayCommand]
     private void SelectPrevious()
     {
-        if (Results.Count > 0)
-            SelectedIndex = (SelectedIndex - 1 + Results.Count) % Results.Count;
+        if (Results.Count == 0) return;
+
+        if (SelectedIndex > 0)
+        {
+            SelectedIndex--;
+        }
+        else
+        {
+            var totalPages = (_allResults.Count + _pageSize - 1) / _pageSize;
+            _page = (_page - 1 + totalPages) % totalPages;
+            ShowPage();
+            SelectedIndex = Results.Count - 1;
+        }
+    }
+
+    public void NextPage()
+    {
+        if (_allResults.Count == 0) return;
+        var totalPages = (_allResults.Count + _pageSize - 1) / _pageSize;
+        _page = (_page + 1) % totalPages;
+        ShowPage();
+    }
+
+    public void PrevPage()
+    {
+        if (_allResults.Count == 0) return;
+        var totalPages = (_allResults.Count + _pageSize - 1) / _pageSize;
+        _page = (_page - 1 + totalPages) % totalPages;
+        ShowPage();
     }
 
     public string? ExecuteSelected()
@@ -121,11 +150,7 @@ public partial class MainViewModel : ObservableObject
         return _executionService.Execute(item);
     }
 
-    [RelayCommand]
-    private void Hide()
-    {
-        IsVisible = false;
-    }
+    [RelayCommand] private void Hide() => IsVisible = false;
 
     [RelayCommand]
     private void OpenConfig()
@@ -138,6 +163,7 @@ public partial class MainViewModel : ObservableObject
     private void ReloadConfig()
     {
         _configService.Reload();
+        _pageSize = _configService.Current.UI.MaxVisibleItems;
         var cfg = _configService.Current;
         _ = Task.Run(async () =>
         {
@@ -149,12 +175,19 @@ public partial class MainViewModel : ObservableObject
 
     public event Action<ConfigData>? ConfigReloaded;
 
-    public void ResetSearch()
+    private void ClearAll()
     {
-        SearchText = "";
+        _allResults.Clear();
         Results.Clear();
         SelectedIndex = 0;
         TotalCount = 0;
+        _page = 0;
+    }
+
+    public void ResetSearch()
+    {
+        SearchText = "";
+        ClearAll();
         StatusText = "就绪";
     }
 }

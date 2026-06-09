@@ -8,6 +8,9 @@ settings:
   hide_delay_ms: 200
   show_on_startup: false
 
+window:
+  always_on_top: true
+
 colors:
   background: "#B216213E"
   search_card: "#0DFFFFFF"
@@ -21,6 +24,32 @@ colors:
   text_secondary: "#8899AA"
   text_muted: "#556677"
   accent: "#D97035"
+
+search_box:
+  placeholder: "搜索应用、文件、命令..."
+  icon: "🔍"
+  esc_hint: ""
+
+results:
+  padding_h: 10
+  padding_v: 7
+  margin: 1
+  icon_size: 20
+  badge_font_size: 9
+
+layout:
+  outer_margin: 12
+  card_gap: 10
+  search_padding: 14
+  results_padding: 6
+
+shortcuts:
+  next_page: Tab
+  prev_page: Shift+Tab
+  execute: Enter
+  hide: Escape
+  open_config: "Ctrl+,"
+  reload_config: Ctrl+R
 
 search:
   match_mode: contains
@@ -46,7 +75,7 @@ ui:
   font_size_search: 17
   font_size_result_name: 14
   font_size_result_desc: 11
-  max_visible_items: 6
+  max_visible_items: 10
   item_height: 44
   show_icons: true
   show_type_badge: true

@@ -37,9 +37,9 @@ public partial class MainWindow : Window
         if (_needsCenter)
         {
             _needsCenter = false;
+            _anchorTop = Top;
             var wa = System.Windows.SystemParameters.WorkArea;
             Left = wa.Left + (wa.Width - ActualWidth) / 2;
-            _anchorTop = wa.Top + wa.Height * 0.3;
         }
         Top = _anchorTop;
     }
@@ -72,9 +72,10 @@ public partial class MainWindow : Window
             case Key.Up: e.Handled = true; _vm.SelectPreviousCommand.Execute(null); break;
             case Key.Enter: e.Handled = true; ExecAndHide(); break;
             case Key.Escape: e.Handled = true; Hide(); _vm.IsVisible = false; break;
-            case Key.Tab when _vm.SelectedIndex >= 0 && _vm.SelectedIndex < _vm.Results.Count
-                && _vm.Results[_vm.SelectedIndex].Type == SearchResultType.SearchHint:
-                e.Handled = true; ExecAndHide(); break;
+            case Key.Tab when Keyboard.Modifiers == ModifierKeys.Shift:
+                e.Handled = true; _vm.PrevPage(); break;
+            case Key.Tab:
+                e.Handled = true; _vm.NextPage(); break;
             case Key.OemComma when Keyboard.Modifiers == ModifierKeys.Control:
                 e.Handled = true; _vm.OpenConfigCommand.Execute(null); break;
             case Key.R when Keyboard.Modifiers == ModifierKeys.Control:

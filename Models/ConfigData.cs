@@ -10,12 +10,19 @@ public class ConfigData
     public bool HideOnDeactivate { get; set; } = true;
     public int HideDelayMs { get; set; } = 200;
     public bool ShowOnStartup { get; set; }
+
     public ColorConfig Colors { get; set; } = new();
+    public WindowConfig Window { get; set; } = new();
+    public SearchBoxConfig SearchBox { get; set; } = new();
+    public ResultsConfig Results { get; set; } = new();
+    public LayoutConfig Layout { get; set; } = new();
+    public ShortcutsConfig Shortcuts { get; set; } = new();
     public SearchConfig Search { get; set; } = new();
     public ExcludeConfig Exclude { get; set; } = new();
     public CacheConfig Cache { get; set; } = new();
     public UIConfig UI { get; set; } = new();
     public TerminalConfig Terminal { get; set; } = new();
+
     public List<string> SearchPaths { get; set; } = new();
     public List<string> FileTypes { get; set; } = new() { ".exe", ".lnk" };
     public PriorityConfig Priority { get; set; } = new();

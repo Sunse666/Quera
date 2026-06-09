@@ -120,6 +120,43 @@ public class ConfigService : IConfigService
             cfg.Terminal.AdminDefault = raw.Terminal.AdminDefault ?? cfg.Terminal.AdminDefault;
         }
 
+        if (raw.Window != null)
+            cfg.Window.AlwaysOnTop = raw.Window.AlwaysOnTop ?? cfg.Window.AlwaysOnTop;
+
+        if (raw.SearchBox != null)
+        {
+            cfg.SearchBox.Placeholder = raw.SearchBox.Placeholder ?? cfg.SearchBox.Placeholder;
+            cfg.SearchBox.Icon = raw.SearchBox.Icon ?? cfg.SearchBox.Icon;
+            cfg.SearchBox.EscHint = raw.SearchBox.EscHint ?? cfg.SearchBox.EscHint;
+        }
+
+        if (raw.Results != null)
+        {
+            cfg.Results.PaddingH = raw.Results.PaddingH ?? cfg.Results.PaddingH;
+            cfg.Results.PaddingV = raw.Results.PaddingV ?? cfg.Results.PaddingV;
+            cfg.Results.Margin = raw.Results.Margin ?? cfg.Results.Margin;
+            cfg.Results.IconSize = raw.Results.IconSize ?? cfg.Results.IconSize;
+            cfg.Results.BadgeFontSize = raw.Results.BadgeFontSize ?? cfg.Results.BadgeFontSize;
+        }
+
+        if (raw.Layout != null)
+        {
+            cfg.Layout.OuterMargin = raw.Layout.OuterMargin ?? cfg.Layout.OuterMargin;
+            cfg.Layout.CardGap = raw.Layout.CardGap ?? cfg.Layout.CardGap;
+            cfg.Layout.SearchPadding = raw.Layout.SearchPadding ?? cfg.Layout.SearchPadding;
+            cfg.Layout.ResultsPadding = raw.Layout.ResultsPadding ?? cfg.Layout.ResultsPadding;
+        }
+
+        if (raw.Shortcuts != null)
+        {
+            cfg.Shortcuts.NextPage = raw.Shortcuts.NextPage ?? cfg.Shortcuts.NextPage;
+            cfg.Shortcuts.PrevPage = raw.Shortcuts.PrevPage ?? cfg.Shortcuts.PrevPage;
+            cfg.Shortcuts.Execute = raw.Shortcuts.Execute ?? cfg.Shortcuts.Execute;
+            cfg.Shortcuts.Hide = raw.Shortcuts.Hide ?? cfg.Shortcuts.Hide;
+            cfg.Shortcuts.OpenConfig = raw.Shortcuts.OpenConfig ?? cfg.Shortcuts.OpenConfig;
+            cfg.Shortcuts.ReloadConfig = raw.Shortcuts.ReloadConfig ?? cfg.Shortcuts.ReloadConfig;
+        }
+
         if (raw.Colors != null)
         {
             cfg.Colors = new ColorConfig
@@ -160,6 +197,11 @@ public class ConfigService : IConfigService
     {
         public YamlSettings? Settings { get; set; }
         public YamlColors? Colors { get; set; }
+        public YamlWindow? Window { get; set; }
+        public YamlSearchBox? SearchBox { get; set; }
+        public YamlResults? Results { get; set; }
+        public YamlLayout? Layout { get; set; }
+        public YamlShortcuts? Shortcuts { get; set; }
         public YamlSearch? Search { get; set; }
         public YamlExclude? Exclude { get; set; }
         public YamlCache? Cache { get; set; }
@@ -240,6 +282,45 @@ public class ConfigService : IConfigService
     {
         public string? Default { get; set; }
         public string? AdminDefault { get; set; }
+    }
+
+    private class YamlWindow
+    {
+        public bool? AlwaysOnTop { get; set; }
+    }
+
+    private class YamlSearchBox
+    {
+        public string? Placeholder { get; set; }
+        public string? Icon { get; set; }
+        public string? EscHint { get; set; }
+    }
+
+    private class YamlResults
+    {
+        public int? PaddingH { get; set; }
+        public int? PaddingV { get; set; }
+        public int? Margin { get; set; }
+        public int? IconSize { get; set; }
+        public int? BadgeFontSize { get; set; }
+    }
+
+    private class YamlLayout
+    {
+        public int? OuterMargin { get; set; }
+        public int? CardGap { get; set; }
+        public int? SearchPadding { get; set; }
+        public int? ResultsPadding { get; set; }
+    }
+
+    private class YamlShortcuts
+    {
+        public string? NextPage { get; set; }
+        public string? PrevPage { get; set; }
+        public string? Execute { get; set; }
+        public string? Hide { get; set; }
+        public string? OpenConfig { get; set; }
+        public string? ReloadConfig { get; set; }
     }
 
     private class YamlPriority
