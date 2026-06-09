@@ -75,6 +75,48 @@ public class ConfigService : IConfigService
             cfg.Opacity = (raw.Settings.Opacity ?? 96) / 100.0;
             cfg.MaxResults = raw.Settings.MaxResults ?? cfg.MaxResults;
             cfg.AutoStart = raw.Settings.AutoStart ?? cfg.AutoStart;
+            cfg.HideOnDeactivate = raw.Settings.HideOnDeactivate ?? cfg.HideOnDeactivate;
+            cfg.HideDelayMs = raw.Settings.HideDelayMs ?? cfg.HideDelayMs;
+            cfg.ShowOnStartup = raw.Settings.ShowOnStartup ?? cfg.ShowOnStartup;
+        }
+
+        if (raw.Search != null)
+        {
+            cfg.Search.MatchMode = raw.Search.MatchMode ?? cfg.Search.MatchMode;
+            cfg.Search.IncludeDirectories = raw.Search.IncludeDirectories ?? cfg.Search.IncludeDirectories;
+            cfg.Search.MaxDepth = raw.Search.MaxDepth ?? cfg.Search.MaxDepth;
+        }
+
+        if (raw.Exclude != null)
+        {
+            if (raw.Exclude.Paths != null) cfg.Exclude.Paths = raw.Exclude.Paths;
+            if (raw.Exclude.Patterns != null) cfg.Exclude.Patterns = raw.Exclude.Patterns;
+        }
+
+        if (raw.Cache != null)
+        {
+            cfg.Cache.Enabled = raw.Cache.Enabled ?? cfg.Cache.Enabled;
+            cfg.Cache.RefreshOnStart = raw.Cache.RefreshOnStart ?? cfg.Cache.RefreshOnStart;
+            cfg.Cache.MaxFiles = raw.Cache.MaxFiles ?? cfg.Cache.MaxFiles;
+        }
+
+        if (raw.UI != null)
+        {
+            cfg.UI.BorderRadius = raw.UI.BorderRadius ?? cfg.UI.BorderRadius;
+            cfg.UI.FontFamily = raw.UI.FontFamily ?? cfg.UI.FontFamily;
+            cfg.UI.FontSizeSearch = raw.UI.FontSizeSearch ?? cfg.UI.FontSizeSearch;
+            cfg.UI.FontSizeResultName = raw.UI.FontSizeResultName ?? cfg.UI.FontSizeResultName;
+            cfg.UI.FontSizeResultDesc = raw.UI.FontSizeResultDesc ?? cfg.UI.FontSizeResultDesc;
+            cfg.UI.ItemHeight = raw.UI.ItemHeight ?? cfg.UI.ItemHeight;
+            cfg.UI.ShowIcons = raw.UI.ShowIcons ?? cfg.UI.ShowIcons;
+            cfg.UI.ShowTypeBadge = raw.UI.ShowTypeBadge ?? cfg.UI.ShowTypeBadge;
+            cfg.UI.ShowStatusBar = raw.UI.ShowStatusBar ?? cfg.UI.ShowStatusBar;
+        }
+
+        if (raw.Terminal != null)
+        {
+            cfg.Terminal.Default = raw.Terminal.Default ?? cfg.Terminal.Default;
+            cfg.Terminal.AdminDefault = raw.Terminal.AdminDefault ?? cfg.Terminal.AdminDefault;
         }
 
         if (raw.Colors != null)
@@ -117,6 +159,11 @@ public class ConfigService : IConfigService
     {
         public YamlSettings? Settings { get; set; }
         public YamlColors? Colors { get; set; }
+        public YamlSearch? Search { get; set; }
+        public YamlExclude? Exclude { get; set; }
+        public YamlCache? Cache { get; set; }
+        public YamlUI? UI { get; set; }
+        public YamlTerminal? Terminal { get; set; }
         public List<string>? Paths { get; set; }
         public List<string>? FileTypes { get; set; }
         public List<CommandItem>? Commands { get; set; }
@@ -133,6 +180,9 @@ public class ConfigService : IConfigService
         public int? Opacity { get; set; }
         public int? MaxResults { get; set; }
         public bool? AutoStart { get; set; }
+        public bool? HideOnDeactivate { get; set; }
+        public int? HideDelayMs { get; set; }
+        public bool? ShowOnStartup { get; set; }
     }
 
     private class YamlColors
@@ -149,6 +199,45 @@ public class ConfigService : IConfigService
         public string? TextSecondary { get; set; }
         public string? TextMuted { get; set; }
         public string? Accent { get; set; }
+    }
+
+    private class YamlSearch
+    {
+        public string? MatchMode { get; set; }
+        public bool? IncludeDirectories { get; set; }
+        public int? MaxDepth { get; set; }
+    }
+
+    private class YamlExclude
+    {
+        public List<string>? Paths { get; set; }
+        public List<string>? Patterns { get; set; }
+    }
+
+    private class YamlCache
+    {
+        public bool? Enabled { get; set; }
+        public bool? RefreshOnStart { get; set; }
+        public int? MaxFiles { get; set; }
+    }
+
+    private class YamlUI
+    {
+        public int? BorderRadius { get; set; }
+        public string? FontFamily { get; set; }
+        public int? FontSizeSearch { get; set; }
+        public int? FontSizeResultName { get; set; }
+        public int? FontSizeResultDesc { get; set; }
+        public int? ItemHeight { get; set; }
+        public bool? ShowIcons { get; set; }
+        public bool? ShowTypeBadge { get; set; }
+        public bool? ShowStatusBar { get; set; }
+    }
+
+    private class YamlTerminal
+    {
+        public string? Default { get; set; }
+        public string? AdminDefault { get; set; }
     }
 
     private class YamlPriority

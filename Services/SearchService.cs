@@ -5,10 +5,11 @@ public class SearchService : ISearchService
     private readonly IFileIndexService _fileIndexService;
     private readonly ILogger<SearchService> _logger;
 
-    public SearchService(IFileIndexService fileIndexService, ILogger<SearchService> logger)
+    public SearchService(IFileIndexService fileIndexService, ILogger<SearchService> logger, IConfigService configService)
     {
         _fileIndexService = fileIndexService;
         _logger = logger;
+        _configService = configService;
     }
 
     public record SearchResultContainer(List<SearchResult> Items, int TotalCount);
@@ -149,11 +150,30 @@ public class SearchService : ISearchService
         return new(results, totalCount);
     }
 
-    private static bool IsMatch(string? text, string lowerQuery)
+    private bool IsMatch(string? text, string lowerQuery)
     {
         if (string.IsNullOrEmpty(text) || string.IsNullOrEmpty(lowerQuery)) return false;
-        return text.ToLowerInvariant().Contains(lowerQuery);
+
+        var t = text.ToLowerInvariant();
+        var mode = _configService?.Current?.Search?.MatchMode ?? "contains";
+
+        return mode switch
+        {
+            "starts_with" => t.StartsWith(lowerQuery),
+            "fuzzy" => FuzzyMatch(t, lowerQuery),
+            _ => t.Contains(lowerQuery),
+        };
     }
+
+    private static bool FuzzyMatch(string text, string query)
+    {
+        int qi = 0;
+        for (int ti = 0; ti < text.Length && qi < query.Length; ti++)
+            if (text[ti] == query[qi]) qi++;
+        return qi == query.Length;
+    }
+
+    private readonly IConfigService? _configService;
 }
 
 internal static class ConfigServiceHelper

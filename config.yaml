@@ -4,6 +4,9 @@ settings:
   opacity: 96
   max_results: 30
   autostart: false
+  hide_on_deactivate: true
+  hide_delay_ms: 200
+  show_on_startup: false
 
 colors:
   background: "#B216213E"
@@ -19,9 +22,43 @@ colors:
   text_muted: "#556677"
   accent: "#D97035"
 
+search:
+  match_mode: contains
+  include_directories: false
+  max_depth: -1
+
+exclude:
+  paths:
+    - ~/AppData
+    - ~/.git
+  patterns:
+    - "*.tmp"
+    - "*.log"
+
+cache:
+  enabled: true
+  refresh_on_start: true
+  max_files: 50000
+
+ui:
+  border_radius: 20
+  font_family: "Microsoft YaHei UI"
+  font_size_search: 17
+  font_size_result_name: 14
+  font_size_result_desc: 11
+  item_height: 44
+  show_icons: true
+  show_type_badge: true
+  show_status_bar: true
+
+terminal:
+  default: cmd
+  admin_default: powershell
+
 paths:
   - ~/Desktop
-  - C:/Tools
+  - C:/Program Files (x86)
+  - D:/Tools
 
 file_types:
   - .exe
@@ -49,7 +86,7 @@ folders:
     icon: "📁"
 
 search_engines:
-  - keyword: shg
+  - keyword: g
     name: Google
     url: https://www.google.com/search?q={query}
     icon: "🔍"

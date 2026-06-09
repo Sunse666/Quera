@@ -14,14 +14,17 @@ public partial class MainWindow : Window
         _vm = vm;
         DataContext = vm;
 
-        _deactivateTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(200) };
+        var cfg = AppServices.Services.GetRequiredService<IConfigService>();
+        _deactivateTimer = new DispatcherTimer
+        {
+            Interval = TimeSpan.FromMilliseconds(cfg.Current.HideDelayMs)
+        };
         _deactivateTimer.Tick += OnDeactivateTimerTick;
 
         SourceInitialized += OnSourceInitialized;
         SizeChanged += (_, _) => { if (_needsCenter) CenterOnScreen(); };
         KeyDown += OnWindowKeyDown;
 
-        var cfg = AppServices.Services.GetRequiredService<IConfigService>();
         Width = cfg.Current.Width;
         Opacity = cfg.Current.Opacity;
     }

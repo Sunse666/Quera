@@ -17,19 +17,29 @@ public class FileIndexService : IFileIndexService
 
     public async Task BuildCacheAsync(List<string> searchPaths, List<string> fileTypes)
     {
+        if (!_configService.Current.Cache.Enabled) return;
+
         var cache = new List<SearchResult>();
 
         var typeSet = new HashSet<string>(
             fileTypes.Select(t => t.StartsWith(".") ? t.ToLowerInvariant() : "." + t.ToLowerInvariant()));
+
+        var excludePaths = _configService.Current.Exclude.Paths
+            .Select(p => _configService.ExpandPath(p).ToLowerInvariant()).ToHashSet();
+        var excludePatterns = _configService.Current.Exclude.Patterns
+            .Select(p => p.ToLowerInvariant()).ToHashSet();
+        var maxDepth = _configService.Current.Search.MaxDepth;
+        var maxFiles = _configService.Current.Cache.MaxFiles;
 
         var customFiles = await Task.Run(() =>
         {
             var results = new List<SearchResult>();
             foreach (var rawPath in searchPaths)
             {
+                if (results.Count >= maxFiles) break;
                 var expanded = _configService.ExpandPath(rawPath);
                 if (!Directory.Exists(expanded)) continue;
-                ScanDirectory(expanded, typeSet, results);
+                ScanDirectory(expanded, typeSet, results, excludePaths, excludePatterns, maxDepth, 0, maxFiles);
             }
             return results;
         });
@@ -79,12 +89,20 @@ public class FileIndexService : IFileIndexService
         CacheBuilt = true;
     }
 
-    private static void ScanDirectory(string dir, HashSet<string> typeSet, List<SearchResult> results)
+    private static void ScanDirectory(string dir, HashSet<string> typeSet, List<SearchResult> results,
+        HashSet<string> excludePaths, HashSet<string> excludePatterns, int maxDepth, int depth, int maxFiles)
     {
+        if (results.Count >= maxFiles) return;
+        if (maxDepth >= 0 && depth > maxDepth) return;
+        if (excludePaths.Contains(dir.ToLowerInvariant())) return;
+
         try
         {
             foreach (var file in Directory.EnumerateFiles(dir, "*.*"))
             {
+                if (results.Count >= maxFiles) break;
+                if (excludePatterns.Any(p => MatchPattern(Path.GetFileName(file), p))) continue;
+
                 var ext = Path.GetExtension(file).ToLowerInvariant();
                 if (!ext.StartsWith(".")) ext = "." + ext;
                 if (!typeSet.Contains(ext)) continue;
@@ -104,10 +122,18 @@ public class FileIndexService : IFileIndexService
             }
 
             foreach (var subDir in Directory.EnumerateDirectories(dir))
-                ScanDirectory(subDir, typeSet, results);
+                ScanDirectory(subDir, typeSet, results, excludePaths, excludePatterns, maxDepth, depth + 1, maxFiles);
         }
-        catch (UnauthorizedAccessException) { /* skip inaccessible directories */ }
-        catch (PathTooLongException) { /* skip */ }
+        catch (UnauthorizedAccessException) { }
+        catch (PathTooLongException) { }
+    }
+
+    private static bool MatchPattern(string name, string pattern)
+    {
+        if (pattern.StartsWith("*.")) return name.EndsWith(pattern[1..], StringComparison.OrdinalIgnoreCase);
+        if (pattern.StartsWith("*")) return name.EndsWith(pattern[1..], StringComparison.OrdinalIgnoreCase);
+        if (pattern.EndsWith("*")) return name.StartsWith(pattern[..^1], StringComparison.OrdinalIgnoreCase);
+        return name.Equals(pattern, StringComparison.OrdinalIgnoreCase);
     }
 
     private static string GetFileIcon(string ext)

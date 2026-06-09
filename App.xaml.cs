@@ -81,7 +81,10 @@ public partial class App : Application
             Application.Current.Dispatcher.Invoke(window.ToggleVisibility);
         };
 
-        window.Hide();
+        if (!cfg.ShowOnStartup)
+            window.Hide();
+        else
+            window.ToggleVisibility();
     }
 
     protected override void OnExit(ExitEventArgs e)
