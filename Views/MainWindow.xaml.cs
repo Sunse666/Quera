@@ -6,33 +6,51 @@ public partial class MainWindow : Window
 {
     private readonly MainViewModel _vm;
     private readonly DispatcherTimer _deactivateTimer;
+    private readonly IConfigService _cfg;
     private bool _needsCenter;
+
+    private const int ChromeOverhead = 150;
 
     public MainWindow(MainViewModel vm)
     {
         InitializeComponent();
         _vm = vm;
+        _cfg = AppServices.Services.GetRequiredService<IConfigService>();
         DataContext = vm;
 
-        var cfg = AppServices.Services.GetRequiredService<IConfigService>();
         _deactivateTimer = new DispatcherTimer
         {
-            Interval = TimeSpan.FromMilliseconds(cfg.Current.HideDelayMs)
+            Interval = TimeSpan.FromMilliseconds(_cfg.Current.HideDelayMs)
         };
         _deactivateTimer.Tick += OnDeactivateTimerTick;
 
         SourceInitialized += OnSourceInitialized;
-        SizeChanged += (_, _) => { if (_needsCenter) CenterOnScreen(); };
+        SizeChanged += OnSizeChanged;
         PreviewKeyDown += OnWindowPreviewKeyDown;
+        _vm.Results.CollectionChanged += (_, _) => UpdateHeight();
+        _vm.ConfigReloaded += c => Dispatcher.Invoke(() => ApplyConfig(c));
 
-        Width = cfg.Current.Width;
-        Opacity = cfg.Current.Opacity;
-        ResultsListView.MaxHeight = cfg.Current.UI.MaxVisibleItems * cfg.Current.UI.ItemHeight;
+        Width = _cfg.Current.Width;
+        Opacity = _cfg.Current.Opacity;
+        ApplyConfig(_cfg.Current);
     }
 
-    private void OnSourceInitialized(object? sender, EventArgs e)
+    private void ApplyConfig(ConfigData c)
     {
-        AcrylicHelper.ApplyBackdrop(this);
+        ResultsListView.Height = c.UI.MaxVisibleItems * c.UI.ItemHeight;
+    }
+
+    private void OnSourceInitialized(object? sender, EventArgs e) => AcrylicHelper.ApplyBackdrop(this);
+
+    private void OnSizeChanged(object sender, SizeChangedEventArgs e)
+    {
+        if (_needsCenter)
+        {
+            _needsCenter = false;
+            var wa = System.Windows.SystemParameters.WorkArea;
+            Left = wa.Left + (wa.Width - ActualWidth) / 2;
+            Top = wa.Top + (wa.Height - ActualHeight) / 2;
+        }
     }
 
     public void ToggleVisibility()
@@ -40,6 +58,7 @@ public partial class MainWindow : Window
         if (IsVisible) { Hide(); _vm.IsVisible = false; return; }
 
         _vm.ResetSearch();
+        Height = 100;
         _needsCenter = true;
         Show();
         Activate();
@@ -47,25 +66,16 @@ public partial class MainWindow : Window
         SearchTextBox.Focus();
     }
 
-    private void CenterOnScreen()
+    private void UpdateHeight()
     {
-        _needsCenter = false;
-        var wa = System.Windows.SystemParameters.WorkArea;
-        Left = wa.Left + (wa.Width - ActualWidth) / 2;
-        Top = wa.Top + (wa.Height - ActualHeight) / 2;
+        if (!_vm.HasSearchText || _vm.Results.Count == 0)
+            Height = 100;
+        else
+            Height = ChromeOverhead + (int)ResultsListView.Height;
     }
 
-    protected override void OnDeactivated(EventArgs e)
-    {
-        base.OnDeactivated(e);
-        _deactivateTimer.Start();
-    }
-
-    protected override void OnActivated(EventArgs e)
-    {
-        base.OnActivated(e);
-        _deactivateTimer.Stop();
-    }
+    protected override void OnDeactivated(EventArgs e) { base.OnDeactivated(e); _deactivateTimer.Start(); }
+    protected override void OnActivated(EventArgs e) { base.OnActivated(e); _deactivateTimer.Stop(); }
 
     private void OnDeactivateTimerTick(object? sender, EventArgs e)
     {

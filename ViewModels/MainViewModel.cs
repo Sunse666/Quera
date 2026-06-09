@@ -140,7 +140,10 @@ public partial class MainViewModel : ObservableObject
             var indexService = ((App)System.Windows.Application.Current).Services.GetRequiredService<IFileIndexService>();
             await indexService.BuildCacheAsync(cfg.SearchPaths, cfg.FileTypes);
         });
+        ConfigReloaded?.Invoke(cfg);
     }
+
+    public event Action<ConfigData>? ConfigReloaded;
 
     public void ResetSearch()
     {
