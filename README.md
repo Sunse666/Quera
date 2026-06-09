@@ -12,44 +12,48 @@
 
 ## Introduction
 
-Quera is a keyboard-driven application launcher for Windows. Press a global hotkey to bring up the search window, type a few characters, and instantly find and launch apps, files, commands, bookmarks, and more. Built with .NET 8 WPF — no WebView required.
+Quera is a keyboard-driven launcher for Windows. Press `Alt + Space` to bring up the search window, type a query, and instantly find apps, files, commands, bookmarks — plus a built-in calculator, system commands, input prefixes, and more. Built with .NET 8 WPF, zero WebView dependency.
 
 ## Features
 
-- **Global Hotkey** — Toggle visibility with a single keystroke (default `Alt + Space`)
-- **File Search** — Auto-indexes Start Menu and custom directories
-- **Custom Commands** — `shell:`, `cmd:`, `ps:`, `run:` execution with optional admin elevation
-- **Bookmarks** — Quick URL access by keyword
-- **Search Engines** — `keyword query` syntax (e.g., `g hello world`)
-- **Folder Shortcuts** — Keyword to open a specific directory
+- **Global Hotkey** — `Alt + Space` toggle with fade animation
+- **File Search** — Indexes Start Menu and custom directories
+- **Custom Commands** — `shell:` / `cmd:` / `ps:` / `run:` with admin elevation
+- **Bookmarks** — Keyword-triggered URLs
+- **Search Engines** — `keyword query` syntax
+- **Folder Shortcuts** — Keyword to open a directory
+- **Calculator** — Type `2+2*3` and see `= 8`
+- **System Commands** — `shutdown` / `restart` / `lock` / `sleep`
+- **Input Prefixes** — `>` commands only, `/` files only, `@` bookmarks only
+- **Aliases** — `reboot` → `shutdown /r /t 0`
+- **History** — Frequently used results rank higher
 - **Paginated Results** — `Tab` / `Shift+Tab` to flip pages
-- **Auto-hide on Blur** — Disappears when you click away
-- **System Tray** — Lives in the tray, right-click for menu
-- **Highly Configurable** — 70+ settings in YAML: colors, fonts, layout, shortcuts, and more
+- **Auto-hide** — Disappears when focus is lost
+- **System Tray** — Lives in the tray with right-click menu
+- **Highly Configurable** — 70+ YAML settings: colors, fonts, layout, shortcuts, priority
+- **Image Icons** — Supports emoji and ico/png/jpg files
 
-## Keyboard Shortcuts
+## Shortcuts
 
 | Key | Action |
 |---|---|
 | `Alt + Space` | Show / Hide |
-| `↑` `↓` | Navigate results |
-| `Enter` | Execute selected item |
-| `Tab` | Next page |
+| `↑` `↓` | Navigate |
+| `Enter` | Execute |
+| `Tab` | Next page (auto-complete on search hint) |
 | `Shift + Tab` | Previous page |
-| `Esc` | Hide window |
-| `Ctrl + ,` | Open config file |
+| `Esc` | Hide |
+| `Ctrl + ,` | Open config |
 | `Ctrl + R` | Reload config |
 
 ## Quick Start
 
-1. Download and extract to any folder
+1. Download and extract
 2. Run `Quera.exe`
-3. Press `Alt + Space` to open the search window
-4. (Optional) Edit `config.yaml` to customize
+3. Press `Alt + Space`
+4. Edit `config.yaml`
 
 ## Configuration
-
-All settings are in `config.yaml`:
 
 ```yaml
 settings:
@@ -64,6 +68,11 @@ settings:
 
 window:
   always_on_top: true
+  corner_radius: 20
+
+icons:
+  enable_image_icons: true
+  cache_icons: true
 
 colors:
   background: "#B216213E"
@@ -170,6 +179,12 @@ search_engines:
     url: https://www.google.com/search?q={query}
     icon: "🔍"
 
+aliases:
+  - keyword: reboot
+    action: cmd:shutdown /r /t 0
+  - keyword: logoff
+    action: cmd:shutdown /l
+
 priority:
   types: [command, bookmark, file, folder, search, search_hint]
   extensions: [.exe, .lnk, .bat, .ps1]
@@ -178,20 +193,20 @@ priority:
 
 ## FAQ
 
-**Q: Hotkey conflict?** Change `settings.hotkey` in config. Supports Ctrl / Alt / Shift / Win modifiers.
+**Q: Hotkey conflict?** Change `settings.hotkey` — supports Ctrl / Alt / Shift / Win.
 
-**Q: Config changes not taking effect?** Press `Ctrl + R` to reload, or restart the app.
+**Q: Config not taking effect?** Press `Ctrl + R` to reload, or restart.
 
-**Q: No file results?** Check that `paths` contains valid directories and `file_types` includes your target extensions.
+**Q: No file results?** Check `paths` and `file_types`.
 
-**Q: How to set custom icons?** Use emoji (e.g. `⚡`) or local image paths (ico/png/jpg).
+**Q: Custom icons?** Use emoji (`⚡`) or local images (ico/png/jpg), `~` = user home.
 
 ## Tech Stack
 
-- .NET 8 WPF (native Windows framework, zero WebView dependency)
+- .NET 8 WPF — native Windows, no WebView
 - CommunityToolkit.Mvvm
 - YamlDotNet
-- Microsoft.Extensions.Hosting (DI container)
+- Microsoft.Extensions.Hosting
 
 ---
 
