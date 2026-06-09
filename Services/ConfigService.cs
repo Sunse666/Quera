@@ -1,3 +1,6 @@
+using YamlDotNet.Serialization;
+using YamlDotNet.Serialization.NamingConventions;
+
 namespace Quera.Services;
 
 public class ConfigService : IConfigService
@@ -14,7 +17,7 @@ public class ConfigService : IConfigService
 
     public void Load()
     {
-        _configPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config.ini");
+        _configPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config.yaml");
         Current = Parse();
     }
 
@@ -26,224 +29,132 @@ public class ConfigService : IConfigService
     public string ExpandPath(string path)
     {
         if (string.IsNullOrWhiteSpace(path)) return "";
-
         if (path.StartsWith("~"))
             return Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-                path[1..].TrimStart('\\', '/'));
-
+                path[1..].TrimStart('\\', '/').Replace('/', '\\'));
         if (path.Contains(':') || path.StartsWith("\\\\"))
             return path;
-
         return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, path);
     }
 
     private ConfigData Parse()
     {
-        var data = new ConfigData();
-
-        if (!File.Exists(_configPath)) return data;
-
-        var text = File.ReadAllText(_configPath);
-
-        if (text.Length == 0) return data;
-
-        if (text.StartsWith("﻿"))
-            text = text[1..];
-
-        text = text.Replace("\r\n", "\n").Replace("\r", "\n");
-
-        var lines = text.Split('\n');
-
-        string? currentSection = null;
-        Dictionary<string, object>? currentItem = null;
-        bool fileTypeCleared = false;
-
-        foreach (var rawLine in lines)
+        try
         {
-            var line = rawLine.Trim();
-            if (line.Length == 0) continue;
-            if (line[0] == '#' || line[0] == ';') continue;
+            if (!File.Exists(_configPath))
+                return new ConfigData();
 
-            if (line[0] == '[' && line[^1] == ']')
-            {
-                var section = line[1..^1].Trim().ToLowerInvariant();
-                currentItem = null;
+            var yaml = File.ReadAllText(_configPath);
+            if (string.IsNullOrWhiteSpace(yaml))
+                return new ConfigData();
 
-                switch (section)
-                {
-                    case "command":
-                        currentItem = new Dictionary<string, object>();
-                        data.Commands.Add(new CommandItem());
-                        currentSection = "command";
-                        break;
-                    case "folder":
-                        currentItem = new Dictionary<string, object>();
-                        data.Folders.Add(new FolderItem());
-                        currentSection = "folder";
-                        break;
-                    case "bookmark":
-                        currentItem = new Dictionary<string, object>();
-                        data.Bookmarks.Add(new BookmarkItem());
-                        currentSection = "bookmark";
-                        break;
-                    case "search":
-                        currentItem = new Dictionary<string, object>();
-                        data.WebSearchEngines.Add(new SearchEngine());
-                        currentSection = "search";
-                        break;
-                    case "filetype":
-                        if (!fileTypeCleared)
-                        {
-                            data.FileTypes.Clear();
-                            fileTypeCleared = true;
-                        }
-                        currentSection = "filetype";
-                        break;
-                    default:
-                        currentSection = section;
-                        break;
-                }
-                continue;
-            }
+            var deserializer = new DeserializerBuilder()
+                .WithNamingConvention(UnderscoredNamingConvention.Instance)
+                .IgnoreUnmatchedProperties()
+                .Build();
 
-            if (currentSection == "path")
-            {
-                var path = Clean(line);
-                if (path.Length > 0)
-                    data.SearchPaths.Add(path);
-                continue;
-            }
-
-            if (currentSection == "filetype")
-            {
-                var ext = Clean(line);
-                if (ext.Length > 0)
-                {
-                    if (!ext.StartsWith(".")) ext = "." + ext;
-                    data.FileTypes.Add(ext);
-                }
-                continue;
-            }
-
-            var eqPos = line.IndexOf('=');
-            if (eqPos < 0) continue;
-
-            var key = line[..eqPos].Trim().ToLowerInvariant();
-            var value = Clean(line[(eqPos + 1)..]);
-
-            if (key.Length == 0) continue;
-
-            if (currentSection == "settings")
-            {
-                switch (key)
-                {
-                    case "hotkey": data.Hotkey = value; break;
-                    case "width": data.Width = int.TryParse(value, out var w) ? w : 680; break;
-                    case "height": data.Height = int.TryParse(value, out var h) ? h : 480; break;
-                    case "opacity": data.Opacity = double.TryParse(value, out var o) ? o / 100.0 : 0.95; break;
-                    case "max_results": data.MaxResults = int.TryParse(value, out var m) ? m : 30; break;
-                    case "autostart": data.AutoStart = value == "true"; break;
-                }
-            }
-            else if (currentSection == "priority")
-            {
-                switch (key)
-                {
-                    case "types":
-                        data.Priority.Types = value.Split(',')
-                            .Select(s => s.Trim()).Where(s => s.Length > 0).ToList();
-                        break;
-                    case "extensions":
-                        data.Priority.Extensions = value.Split(',')
-                            .Select(s => s.Trim()).Where(s => s.Length > 0)
-                            .Select(s => s.StartsWith(".") ? s : "." + s).ToList();
-                        break;
-                    case "custom_path_first":
-                        data.Priority.CustomPathFirst = value == "true";
-                        break;
-                }
-            }
-            else if (currentSection == "command" && data.Commands.Count > 0)
-            {
-                var cmd = data.Commands[^1];
-                SetProperty(cmd, key, value);
-            }
-            else if (currentSection == "folder" && data.Folders.Count > 0)
-            {
-                var folder = data.Folders[^1];
-                SetProperty(folder, key, value);
-            }
-            else if (currentSection == "bookmark" && data.Bookmarks.Count > 0)
-            {
-                var bm = data.Bookmarks[^1];
-                SetProperty(bm, key, value);
-            }
-            else if (currentSection == "search" && data.WebSearchEngines.Count > 0)
-            {
-                var engine = data.WebSearchEngines[^1];
-                SetProperty(engine, key, value);
-            }
+            var raw = deserializer.Deserialize<YamlConfig>(yaml);
+            return Map(raw);
         }
-
-        return data;
-    }
-
-    private static void SetProperty(object obj, string key, string value)
-    {
-        switch (obj)
+        catch (Exception ex)
         {
-            case CommandItem cmd:
-                switch (key)
-                {
-                    case "name": cmd.Name = value; break;
-                    case "keyword": cmd.Keyword = value; break;
-                    case "action": cmd.Action = value; break;
-                    case "icon": cmd.Icon = value; break;
-                    case "admin": cmd.Admin = value == "true"; break;
-                }
-                break;
-            case FolderItem folder:
-                switch (key)
-                {
-                    case "name": folder.Name = value; break;
-                    case "keyword": folder.Keyword = value; break;
-                    case "path": folder.Path = value; break;
-                    case "icon": folder.Icon = value; break;
-                }
-                break;
-            case BookmarkItem bm:
-                switch (key)
-                {
-                    case "name": bm.Name = value; break;
-                    case "keyword": bm.Keyword = value; break;
-                    case "url": bm.Url = value; break;
-                    case "icon": bm.Icon = value; break;
-                }
-                break;
-            case SearchEngine se:
-                switch (key)
-                {
-                    case "name": se.Name = value; break;
-                    case "keyword": se.Keyword = value; break;
-                    case "url": se.Url = value; break;
-                    case "icon": se.Icon = value; break;
-                }
-                break;
+            _logger.LogWarning(ex, "Failed to parse config, using defaults");
+            return new ConfigData();
         }
     }
 
-    private static string Clean(string s)
+    private static ConfigData Map(YamlConfig raw)
     {
-        if (string.IsNullOrEmpty(s)) return "";
-        s = s.Trim();
-        if (s.Length >= 2)
+        var cfg = new ConfigData();
+
+        if (raw.Settings != null)
         {
-            var first = s[0];
-            var last = s[^1];
-            if ((first == '"' && last == '"') || (first == '\'' && last == '\''))
-                return s[1..^1];
+            cfg.Hotkey = raw.Settings.Hotkey ?? cfg.Hotkey;
+            cfg.Width = raw.Settings.Width ?? cfg.Width;
+            cfg.Opacity = (raw.Settings.Opacity ?? 96) / 100.0;
+            cfg.MaxResults = raw.Settings.MaxResults ?? cfg.MaxResults;
+            cfg.AutoStart = raw.Settings.AutoStart ?? cfg.AutoStart;
         }
-        return s;
+
+        if (raw.Colors != null)
+        {
+            cfg.Colors = new ColorConfig
+            {
+                Background = raw.Colors.Background ?? cfg.Colors.Background,
+                SearchCard = raw.Colors.SearchCard ?? cfg.Colors.SearchCard,
+                SearchBorder = raw.Colors.SearchBorder ?? cfg.Colors.SearchBorder,
+                ResultCard = raw.Colors.ResultCard ?? cfg.Colors.ResultCard,
+                ResultBorder = raw.Colors.ResultBorder ?? cfg.Colors.ResultBorder,
+                ResultHover = raw.Colors.ResultHover ?? cfg.Colors.ResultHover,
+                ResultSelectedStart = raw.Colors.ResultSelectedStart ?? cfg.Colors.ResultSelectedStart,
+                ResultSelectedEnd = raw.Colors.ResultSelectedEnd ?? cfg.Colors.ResultSelectedEnd,
+                TextPrimary = raw.Colors.TextPrimary ?? cfg.Colors.TextPrimary,
+                TextSecondary = raw.Colors.TextSecondary ?? cfg.Colors.TextSecondary,
+                TextMuted = raw.Colors.TextMuted ?? cfg.Colors.TextMuted,
+                Accent = raw.Colors.Accent ?? cfg.Colors.Accent,
+            };
+        }
+
+        if (raw.Paths != null) cfg.SearchPaths = raw.Paths;
+        if (raw.FileTypes != null) cfg.FileTypes = raw.FileTypes.Select(t => t.StartsWith(".") ? t : "." + t).ToList();
+        if (raw.Commands != null) cfg.Commands = raw.Commands;
+        if (raw.Bookmarks != null) cfg.Bookmarks = raw.Bookmarks;
+        if (raw.Folders != null) cfg.Folders = raw.Folders;
+        if (raw.SearchEngines != null) cfg.SearchEngines = raw.SearchEngines;
+
+        if (raw.Priority != null)
+        {
+            if (raw.Priority.Types != null) cfg.Priority.Types = raw.Priority.Types;
+            if (raw.Priority.Extensions != null) cfg.Priority.Extensions = raw.Priority.Extensions.Select(t => t.StartsWith(".") ? t : "." + t).ToList();
+            if (raw.Priority.CustomPathFirst != null) cfg.Priority.CustomPathFirst = raw.Priority.CustomPathFirst.Value;
+        }
+
+        return cfg;
+    }
+
+    private class YamlConfig
+    {
+        public YamlSettings? Settings { get; set; }
+        public YamlColors? Colors { get; set; }
+        public List<string>? Paths { get; set; }
+        public List<string>? FileTypes { get; set; }
+        public List<CommandItem>? Commands { get; set; }
+        public List<BookmarkItem>? Bookmarks { get; set; }
+        public List<FolderItem>? Folders { get; set; }
+        public List<SearchEngine>? SearchEngines { get; set; }
+        public YamlPriority? Priority { get; set; }
+    }
+
+    private class YamlSettings
+    {
+        public string? Hotkey { get; set; }
+        public int? Width { get; set; }
+        public int? Opacity { get; set; }
+        public int? MaxResults { get; set; }
+        public bool? AutoStart { get; set; }
+    }
+
+    private class YamlColors
+    {
+        public string? Background { get; set; }
+        public string? SearchCard { get; set; }
+        public string? SearchBorder { get; set; }
+        public string? ResultCard { get; set; }
+        public string? ResultBorder { get; set; }
+        public string? ResultHover { get; set; }
+        public string? ResultSelectedStart { get; set; }
+        public string? ResultSelectedEnd { get; set; }
+        public string? TextPrimary { get; set; }
+        public string? TextSecondary { get; set; }
+        public string? TextMuted { get; set; }
+        public string? Accent { get; set; }
+    }
+
+    private class YamlPriority
+    {
+        public List<string>? Types { get; set; }
+        public List<string>? Extensions { get; set; }
+        public bool? CustomPathFirst { get; set; }
     }
 }

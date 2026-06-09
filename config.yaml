@@ -1,0 +1,70 @@
+settings:
+  hotkey: Alt+Space
+  width: 680
+  opacity: 96
+  max_results: 30
+  autostart: false
+
+colors:
+  background: "#B216213E"
+  search_card: "#0DFFFFFF"
+  search_border: "#12FFFFFF"
+  result_card: "#CC1A1A2E"
+  result_border: "#33FFFFFF"
+  result_hover: "#18FFFFFF"
+  result_selected_start: "#D97035"
+  result_selected_end: "#E8955A"
+  text_primary: "#FFFFFF"
+  text_secondary: "#8899AA"
+  text_muted: "#556677"
+  accent: "#D97035"
+
+paths:
+  - ~/Desktop
+  - C:/Tools
+
+file_types:
+  - .exe
+  - .lnk
+  - .bat
+  - .ps1
+
+commands:
+  - keyword: cmd
+    name: 命令提示符
+    action: run:cmd.exe
+    icon: "⚡"
+    admin: false
+
+bookmarks:
+  - keyword: gh
+    name: GitHub
+    url: https://github.com
+    icon: "🔗"
+
+folders:
+  - keyword: desk
+    name: 桌面
+    path: ~/Desktop
+    icon: "📁"
+
+search_engines:
+  - keyword: shg
+    name: Google
+    url: https://www.google.com/search?q={query}
+    icon: "🔍"
+
+priority:
+  types:
+    - command
+    - bookmark
+    - file
+    - folder
+    - search
+    - search_hint
+  extensions:
+    - .exe
+    - .lnk
+    - .bat
+    - .ps1
+  custom_path_first: true

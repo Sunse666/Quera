@@ -29,7 +29,7 @@ public class SearchService : ISearchService
 
             if (keyword.Length > 0 && searchQuery.Length > 0)
             {
-                foreach (var engine in config.WebSearchEngines)
+                foreach (var engine in config.SearchEngines)
                 {
                     if ((engine.Keyword ?? "").ToLowerInvariant() == keyword.ToLowerInvariant())
                     {
@@ -118,7 +118,7 @@ public class SearchService : ISearchService
             }
         }
 
-        foreach (var engine in config.WebSearchEngines)
+        foreach (var engine in config.SearchEngines)
         {
             if (IsMatch(engine.Keyword, lowerQuery) || IsMatch(engine.Name, lowerQuery))
             {

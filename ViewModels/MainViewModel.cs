@@ -1,3 +1,5 @@
+using System.Windows.Threading;
+
 namespace Quera.ViewModels;
 
 public partial class MainViewModel : ObservableObject
@@ -6,7 +8,7 @@ public partial class MainViewModel : ObservableObject
     private readonly ISearchService _searchService;
     private readonly IExecutionService _executionService;
     private readonly IFileIndexService _fileIndexService;
-    private CancellationTokenSource? _searchCts;
+    private readonly DispatcherTimer _debounceTimer;
 
     public MainViewModel(IConfigService configService, ISearchService searchService, IExecutionService executionService, IFileIndexService fileIndexService)
     {
@@ -14,6 +16,9 @@ public partial class MainViewModel : ObservableObject
         _searchService = searchService;
         _executionService = executionService;
         _fileIndexService = fileIndexService;
+
+        _debounceTimer = new DispatcherTimer(TimeSpan.FromMilliseconds(60), DispatcherPriority.Normal, OnDebounceTick, Dispatcher.CurrentDispatcher);
+        _debounceTimer.Stop();
     }
 
     [ObservableProperty]
@@ -39,23 +44,14 @@ public partial class MainViewModel : ObservableObject
     partial void OnSearchTextChanged(string value)
     {
         OnPropertyChanged(nameof(HasSearchText));
-        _searchCts?.Cancel();
-        _searchCts = new CancellationTokenSource();
-        var token = _searchCts.Token;
+        _debounceTimer.Stop();
+        _debounceTimer.Start();
+    }
 
-        Task.Delay(80, token).ContinueWith(_ =>
-        {
-            if (token.IsCancellationRequested) return;
-            try
-            {
-                var app = System.Windows.Application.Current;
-                app?.Dispatcher.Invoke(() => DoSearch());
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Search error: {ex}");
-            }
-        }, token, TaskContinuationOptions.OnlyOnRanToCompletion, TaskScheduler.Default);
+    private void OnDebounceTick(object? sender, EventArgs e)
+    {
+        _debounceTimer.Stop();
+        DoSearch();
     }
 
     private void DoSearch()
@@ -88,15 +84,15 @@ public partial class MainViewModel : ObservableObject
 
             TotalCount = container.TotalCount;
             SelectedIndex = 0;
-
-            if (container.TotalCount > container.Items.Count)
-                StatusText = $"{container.Items.Count}/{container.TotalCount} 个结果";
-            else
-                StatusText = $"{container.Items.Count} 个结果";
+            StatusText = container.TotalCount == 0
+                ? "无结果"
+                : container.TotalCount > container.Items.Count
+                    ? $"{container.Items.Count}/{container.TotalCount} 个结果"
+                    : $"{container.Items.Count} 个结果";
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"DoSearch error: {ex}");
+            Debug.WriteLine($"DoSearch: {ex}");
         }
     }
 
@@ -130,7 +126,7 @@ public partial class MainViewModel : ObservableObject
     [RelayCommand]
     private void OpenConfig()
     {
-        var configPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config.ini");
+        var configPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config.yaml");
         Process.Start("notepad.exe", configPath);
     }
 

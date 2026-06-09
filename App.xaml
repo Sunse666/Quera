@@ -4,12 +4,11 @@
              xmlns:converters="clr-namespace:Quera.Converters">
     <Application.Resources>
         <ResourceDictionary>
+            <converters:TypeToBadgeTextConverter x:Key="TypeToBadgeText"/>
+            <converters:BoolToVisibilityConverter x:Key="BoolToVisibility"/>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Resources/Styles/DarkTheme.xaml"/>
             </ResourceDictionary.MergedDictionaries>
-
-            <converters:TypeToBadgeTextConverter x:Key="TypeToBadgeText"/>
-            <converters:BoolToVisibilityConverter x:Key="BoolToVisibility"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

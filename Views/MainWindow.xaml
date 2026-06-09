@@ -12,9 +12,7 @@
         ShowInTaskbar="False"
         WindowStartupLocation="CenterScreen"
         UseLayoutRounding="True"
-        Width="680"
-        SizeToContent="Height"
-        MaxHeight="700">
+        Width="680" SizeToContent="Height">
 
     <WindowChrome.WindowChrome>
         <WindowChrome GlassFrameThickness="0"
@@ -25,15 +23,7 @@
 
     <Border x:Name="OuterBorder"
             Background="#B216213E"
-            CornerRadius="20"
-            SizeChanged="OnOuterBorderSizeChanged">
-
-        <Border.Effect>
-            <DropShadowEffect BlurRadius="50"
-                              ShadowDepth="0"
-                              Opacity="0.6"
-                              Color="#000000"/>
-        </Border.Effect>
+            CornerRadius="20">
 
         <Grid Margin="12">
             <Grid.RowDefinitions>
@@ -42,13 +32,12 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <!-- Row 0: Search card (always visible) -->
             <Border Grid.Row="0"
                     Background="#0DFFFFFF"
                     BorderBrush="#12FFFFFF"
                     BorderThickness="1"
                     CornerRadius="14"
-                    Padding="14,12">
+                    Padding="14">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
@@ -56,82 +45,80 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Grid.Column="0"
-                               Text="🔍"
-                               FontSize="17"
-                               FontFamily="Segoe UI Emoji"
-                               Opacity="0.5"
-                               VerticalAlignment="Center"
-                               Margin="0,0,10,0"/>
+                    <TextBlock Grid.Column="0" Text="🔍" FontSize="17"
+                               FontFamily="Segoe UI Emoji" Opacity="0.5"
+                               VerticalAlignment="Center" Margin="0,0,10,0"/>
 
-                    <TextBox x:Name="SearchTextBox"
-                             Grid.Column="1"
+                    <TextBox x:Name="SearchTextBox" Grid.Column="1"
                              Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
-                             Background="Transparent"
-                             BorderThickness="0"
-                             Foreground="#FFFFFF"
-                             FontSize="17"
-                             CaretBrush="#D97035"
-                             VerticalAlignment="Center"
+                             Background="Transparent" BorderThickness="0"
+                             Foreground="#FFFFFF" FontSize="17"
+                             CaretBrush="#D97035" VerticalAlignment="Center"
                              FontFamily="Microsoft YaHei UI"/>
 
-                    <Border Grid.Column="2"
-                            Background="#12FFFFFF"
-                            CornerRadius="5"
-                            Padding="7,3"
-                            VerticalAlignment="Center">
-                        <TextBlock Text="ESC 关闭"
-                                   Foreground="#667788"
-                                   FontSize="10"/>
+                    <Border Grid.Column="2" Background="#12FFFFFF"
+                            CornerRadius="5" Padding="7,3" VerticalAlignment="Center">
+                        <TextBlock Text="ESC 关闭" Foreground="#667788" FontSize="10"/>
                     </Border>
                 </Grid>
             </Border>
 
-            <!-- Row 1: Results card (hidden when empty) -->
             <Border Grid.Row="1"
-                    Background="#0DFFFFFF"
-                    BorderBrush="#12FFFFFF"
-                    BorderThickness="1"
-                    CornerRadius="14"
-                    Padding="4"
+                    Background="#CC1A1A2E" BorderBrush="#33FFFFFF"
+                    BorderThickness="1" CornerRadius="14" Padding="6"
                     Margin="0,10,0,0"
                     Visibility="{Binding HasSearchText, Converter={StaticResource BoolToVisibility}}">
 
                 <ListView x:Name="ResultsListView"
                           ItemsSource="{Binding Results}"
                           SelectedIndex="{Binding SelectedIndex, Mode=TwoWay}"
-                          Background="Transparent"
-                          BorderThickness="0"
-                          ItemTemplate="{StaticResource ResultItemTemplate}"
-                          VirtualizingPanel.ScrollUnit="Pixel"
+                          Background="Transparent" BorderThickness="0"
                           ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                           ScrollViewer.VerticalScrollBarVisibility="Auto"
-                          MaxHeight="540">
-                    <ListView.ItemContainerStyle>
-                        <Style TargetType="ListViewItem" BasedOn="{StaticResource {x:Type ListViewItem}}"/>
-                    </ListView.ItemContainerStyle>
+                          MaxHeight="540" MinHeight="40">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Border CornerRadius="8" Padding="10,7"
+                                    Background="#18FFFFFF" Margin="0,1">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="30"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Text="{Binding Icon}"
+                                               FontSize="20" FontFamily="Segoe UI Emoji"
+                                               VerticalAlignment="Center"/>
+                                    <StackPanel Grid.Column="1" Margin="10,0,0,0"
+                                                VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding Name}"
+                                                   Foreground="White" FontSize="14"/>
+                                        <TextBlock Text="{Binding Description}"
+                                                   Foreground="#8899AA" FontSize="11"
+                                                   TextTrimming="CharacterEllipsis"/>
+                                    </StackPanel>
+                                    <Border Grid.Column="2" Background="#12FFFFFF"
+                                            CornerRadius="3" Padding="5,2">
+                                        <TextBlock Text="{Binding Type, Converter={StaticResource TypeToBadgeText}}"
+                                                   Foreground="#8899AA" FontSize="9"/>
+                                    </Border>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
                 </ListView>
             </Border>
 
-            <!-- Row 2: Status bar (hidden when empty) -->
-            <Border Grid.Row="2"
-                    Padding="8,8,8,4"
-                    Margin="0,4,0,0"
+            <Border Grid.Row="2" Padding="8,8,8,4" Margin="0,4,0,0"
                     Visibility="{Binding HasSearchText, Converter={StaticResource BoolToVisibility}}">
                 <DockPanel>
-                    <StackPanel DockPanel.Dock="Left" Orientation="Horizontal">
-                        <TextBlock Foreground="#556677" FontSize="10">
-                            <Run Text="↑↓ 导航"/>
-                            <Run Text="  "/>
-                            <Run Text="Enter 执行"/>
-                            <Run Text="  "/>
-                            <Run Text="Ctrl+, 配置"/>
-                        </TextBlock>
-                    </StackPanel>
-                    <TextBlock DockPanel.Dock="Right"
-                               Text="{Binding StatusText}"
-                               Foreground="#556677"
-                               FontSize="10"/>
+                    <TextBlock DockPanel.Dock="Left" Foreground="#556677" FontSize="10">
+                        <Run Text="↑↓ 导航"/><Run Text="  "/>
+                        <Run Text="Enter 执行"/><Run Text="  "/>
+                        <Run Text="Ctrl+, 配置"/>
+                    </TextBlock>
+                    <TextBlock DockPanel.Dock="Right" Text="{Binding StatusText}"
+                               Foreground="#556677" FontSize="10"/>
                 </DockPanel>
             </Border>
         </Grid>
