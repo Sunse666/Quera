@@ -15,29 +15,23 @@
         Width="680" SizeToContent="Height">
 
     <WindowChrome.WindowChrome>
-        <WindowChrome GlassFrameThickness="0"
-                      CornerRadius="20"
-                      ResizeBorderThickness="0"
+        <WindowChrome x:Name="Chrome" GlassFrameThickness="0"
+                      CornerRadius="20" ResizeBorderThickness="0"
                       CaptionHeight="0"/>
     </WindowChrome.WindowChrome>
 
-    <Border x:Name="OuterBorder"
-            Background="#B216213E"
-            CornerRadius="20">
+    <Border x:Name="OuterBorder" Background="#B216213E" CornerRadius="20">
 
-        <Grid Margin="12">
+        <Grid x:Name="OuterGrid" Margin="12">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <Border Grid.Row="0"
-                    Background="#0DFFFFFF"
-                    BorderBrush="#12FFFFFF"
-                    BorderThickness="1"
-                    CornerRadius="14"
-                    Padding="14">
+            <Border x:Name="SearchCard" Grid.Row="0"
+                    Background="#0DFFFFFF" BorderBrush="#12FFFFFF"
+                    BorderThickness="1" CornerRadius="14" Padding="14">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
@@ -45,8 +39,8 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Grid.Column="0" Text="🔍" FontSize="17"
-                               FontFamily="Segoe UI Emoji" Opacity="0.5"
+                    <TextBlock x:Name="SearchIcon" Grid.Column="0" Text="🔍"
+                               FontSize="17" FontFamily="Segoe UI Emoji" Opacity="0.5"
                                VerticalAlignment="Center" Margin="0,0,10,0"/>
 
                     <TextBox x:Name="SearchTextBox" Grid.Column="1"
@@ -56,14 +50,15 @@
                              CaretBrush="#D97035" VerticalAlignment="Center"
                              FontFamily="Microsoft YaHei UI"/>
 
-                    <Border Grid.Column="2" Background="#12FFFFFF"
+                    <Border x:Name="EscBadge" Grid.Column="2" Background="#12FFFFFF"
                             CornerRadius="5" Padding="7,3" VerticalAlignment="Center">
-                        <TextBlock Text="ESC 关闭" Foreground="#667788" FontSize="10"/>
+                        <TextBlock x:Name="EscText" Text="ESC 关闭"
+                                   Foreground="#667788" FontSize="10"/>
                     </Border>
                 </Grid>
             </Border>
 
-            <Border Grid.Row="1"
+            <Border x:Name="ResultsCard" Grid.Row="1"
                     Background="#CC1A1A2E" BorderBrush="#33FFFFFF"
                     BorderThickness="1" CornerRadius="14" Padding="6"
                     Margin="0,10,0,0"
@@ -81,23 +76,23 @@
                                     Background="#18FFFFFF" Margin="0,1">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="30"/>
+                                        <ColumnDefinition Width="Auto"/>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
-                                    <ContentControl Grid.Column="0"
+                                    <ContentControl x:Name="IconCtrl" Grid.Column="0"
                                                     Content="{Binding Icon, Converter={StaticResource IconToImage}}"
                                                     Width="20" Height="20"
                                                     VerticalAlignment="Center"/>
                                     <StackPanel Grid.Column="1" Margin="10,0,0,0"
                                                 VerticalAlignment="Center">
-                                        <TextBlock Text="{Binding Name}"
+                                        <TextBlock x:Name="ResultName" Text="{Binding Name}"
                                                    Foreground="White" FontSize="14"/>
-                                        <TextBlock Text="{Binding Description}"
+                                        <TextBlock x:Name="ResultDesc" Text="{Binding Description}"
                                                    Foreground="#8899AA" FontSize="11"
                                                    TextTrimming="CharacterEllipsis"/>
                                     </StackPanel>
-                                    <Border Grid.Column="2" Background="#12FFFFFF"
+                                    <Border x:Name="Badge" Grid.Column="2" Background="#12FFFFFF"
                                             CornerRadius="3" Padding="5,2">
                                         <TextBlock Text="{Binding Type, Converter={StaticResource TypeToBadgeText}}"
                                                    Foreground="#8899AA" FontSize="9"/>
@@ -109,10 +104,11 @@
                 </ListView>
             </Border>
 
-            <Border Grid.Row="2" Padding="8,8,8,4" Margin="0,4,0,0"
+            <Border x:Name="StatusBar" Grid.Row="2" Padding="8,8,8,4" Margin="0,4,0,0"
                     Visibility="{Binding HasSearchText, Converter={StaticResource BoolToVisibility}}">
                 <DockPanel>
-                    <TextBlock DockPanel.Dock="Left" Foreground="#556677" FontSize="10">
+                    <TextBlock x:Name="StatusLeft" DockPanel.Dock="Left"
+                               Foreground="#556677" FontSize="10">
                         <Run Text="↑↓ 导航"/><Run Text="  "/>
                         <Run Text="Enter 执行"/><Run Text="  "/>
                         <Run Text="Ctrl+, 配置"/>

@@ -8,17 +8,18 @@ public partial class MainWindow : Window
     private readonly DispatcherTimer _deactivateTimer;
     private bool _needsCenter;
     private double _anchorTop;
+    private readonly IConfigService _cfg;
 
     public MainWindow(MainViewModel vm)
     {
         InitializeComponent();
         _vm = vm;
-        var cfg = AppServices.Services.GetRequiredService<IConfigService>();
+        _cfg = AppServices.Services.GetRequiredService<IConfigService>();
         DataContext = vm;
 
         _deactivateTimer = new DispatcherTimer
         {
-            Interval = TimeSpan.FromMilliseconds(cfg.Current.HideDelayMs)
+            Interval = TimeSpan.FromMilliseconds(_cfg.Current.HideDelayMs)
         };
         _deactivateTimer.Tick += OnDeactivateTimerTick;
 
@@ -26,8 +27,37 @@ public partial class MainWindow : Window
         SizeChanged += OnSizeChanged;
         PreviewKeyDown += OnWindowPreviewKeyDown;
 
-        Width = cfg.Current.Width;
-        Opacity = cfg.Current.Opacity;
+        Width = _cfg.Current.Width;
+        Opacity = _cfg.Current.Opacity;
+        Topmost = _cfg.Current.Window.AlwaysOnTop;
+        ApplyUIConfig(_cfg.Current);
+        _vm.ConfigReloaded += c => Dispatcher.Invoke(() => ApplyUIConfig(c));
+    }
+
+    private void ApplyUIConfig(ConfigData c)
+    {
+        var ui = c.UI;
+        var l = c.Layout;
+
+        Chrome.CornerRadius = new CornerRadius(ui.BorderRadius);
+        OuterBorder.CornerRadius = new CornerRadius(ui.BorderRadius);
+
+        OuterGrid.Margin = new Thickness(l.OuterMargin);
+        SearchCard.Padding = new Thickness(l.SearchPadding);
+        SearchCard.CornerRadius = new CornerRadius(ui.BorderRadius * 0.7);
+        ResultsCard.CornerRadius = new CornerRadius(ui.BorderRadius * 0.7);
+        ResultsCard.Padding = new Thickness(l.ResultsPadding);
+        ResultsCard.Margin = new Thickness(0, l.CardGap, 0, 0);
+
+        SearchTextBox.FontFamily = new System.Windows.Media.FontFamily(ui.FontFamily);
+        SearchTextBox.FontSize = ui.FontSizeSearch;
+        SearchIcon.FontSize = ui.FontSizeSearch;
+
+        var sb = c.SearchBox;
+        SearchIcon.Text = sb.Icon;
+        EscText.Text = sb.EscHint;
+
+        StatusBar.Visibility = ui.ShowStatusBar ? Visibility.Visible : Visibility.Collapsed;
     }
 
     private void OnSourceInitialized(object? sender, EventArgs e) => AcrylicHelper.ApplyBackdrop(this);

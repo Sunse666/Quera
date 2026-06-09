@@ -30,11 +30,6 @@ colors:
   text_muted: "#556677"
   accent: "#D97035"
 
-search_box:
-  placeholder: ""
-  icon: ""
-  esc_hint: ""
-
 results:
   padding_h: 10
   padding_v: 7
@@ -43,10 +38,10 @@ results:
   badge_font_size: 9
 
 layout:
-  outer_margin: 12
-  card_gap: 10
-  search_padding: 14
-  results_padding: 6
+  outer_margin: 8
+  card_gap: 8
+  search_padding: 8
+  results_padding: 8
 
 shortcuts:
   next_page: Tab
@@ -75,16 +70,16 @@ cache:
   max_files: 50000
 
 ui:
-  border_radius: 20
+  border_radius: 4
   font_family: "Microsoft YaHei UI"
-  font_size_search: 36
-  font_size_result_name: 14
-  font_size_result_desc: 11
-  max_visible_items: 10
-  item_height: 44
+  font_size_search: 16
+  font_size_result_name: 16
+  font_size_result_desc: 16
+  max_visible_items: 8
+  item_height: 24
   show_icons: true
   show_type_badge: true
-  show_status_bar: true
+  show_status_bar: false
 
 terminal:
   default: cmd
