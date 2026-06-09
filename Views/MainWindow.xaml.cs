@@ -23,7 +23,7 @@ public partial class MainWindow : Window
 
         SourceInitialized += OnSourceInitialized;
         SizeChanged += (_, _) => { if (_needsCenter) CenterOnScreen(); };
-        KeyDown += OnWindowKeyDown;
+        PreviewKeyDown += OnWindowPreviewKeyDown;
 
         Width = cfg.Current.Width;
         Opacity = cfg.Current.Opacity;
@@ -72,7 +72,7 @@ public partial class MainWindow : Window
         if (!IsActive) { Hide(); _vm.IsVisible = false; }
     }
 
-    private void OnWindowKeyDown(object sender, KeyEventArgs e)
+    private void OnWindowPreviewKeyDown(object sender, KeyEventArgs e)
     {
         switch (e.Key)
         {

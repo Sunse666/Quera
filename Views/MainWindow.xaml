@@ -74,7 +74,7 @@
                           SelectedIndex="{Binding SelectedIndex, Mode=TwoWay}"
                           Background="Transparent" BorderThickness="0"
                           ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                          ScrollViewer.VerticalScrollBarVisibility="Auto"
+                          ScrollViewer.VerticalScrollBarVisibility="Hidden"
                           MaxHeight="540" MinHeight="40">
                     <ListView.ItemTemplate>
                         <DataTemplate>
