@@ -52,7 +52,7 @@ Quera 是一款 Windows 键盘驱动快速启动器。按下全局热键唤出�
 配置文件为 `config.yaml`，支持以下全部选项：
 
 ```yaml
-# ── 基础设置 ──
+# 基础设置
 settings:
   hotkey: Alt+Space          # 全局热键 (Ctrl/Alt/Shift/Win + 键)
   width: 680                 # 窗口宽度
@@ -63,11 +63,11 @@ settings:
   hide_delay_ms: 200         # 失焦隐藏延迟（毫秒）
   show_on_startup: false     # 启动时是否直接显示窗口
 
-# ── 窗口 ──
+# 窗口
 window:
   always_on_top: true        # 始终置顶
 
-# ── 颜色 ──
+# 颜色
 colors:
   background: "#B216213E"          # 窗口背景
   search_card: "#0DFFFFFF"         # 搜索卡片背景
@@ -82,13 +82,13 @@ colors:
   text_muted: "#556677"            # 弱化文字
   accent: "#D97035"                # 强调色
 
-# ── 搜索框 ──
+# 搜索框
 search_box:
   placeholder: "搜索应用、文件、命令..."
   icon: "🔍"
   esc_hint: "ESC 关闭"
 
-# ── 结果列表 ──
+# 结果列表
 results:
   padding_h: 10
   padding_v: 7
@@ -96,14 +96,14 @@ results:
   icon_size: 20
   badge_font_size: 9
 
-# ── 布局 ──
+# 布局
 layout:
   outer_margin: 12
   card_gap: 10
   search_padding: 14
   results_padding: 6
 
-# ── 快捷键 ──
+# 快捷键
 shortcuts:
   next_page: Tab
   prev_page: Shift+Tab
@@ -112,13 +112,13 @@ shortcuts:
   open_config: "Ctrl+,"
   reload_config: Ctrl+R
 
-# ── 搜索 ──
+# 搜索
 search:
   match_mode: contains        # contains / starts_with / fuzzy
   include_directories: false  # 是否搜索目录名
   max_depth: -1               # 目录扫描深度，-1 无限
 
-# ── 排除 ──
+# 排除
 exclude:
   paths:
     - ~/AppData
@@ -127,13 +127,13 @@ exclude:
     - "*.tmp"
     - "*.log"
 
-# ── 缓存 ──
+# 缓存
 cache:
   enabled: true
   refresh_on_start: true
   max_files: 50000
 
-# ── UI ──
+# UI
 ui:
   border_radius: 20
   font_family: "Microsoft YaHei UI"
@@ -146,24 +146,24 @@ ui:
   show_type_badge: true
   show_status_bar: true
 
-# ── 终端 ──
+# 终端
 terminal:
   default: cmd
   admin_default: powershell
 
-# ── 搜索路径 ──
+# 搜索路径
 paths:
   - ~/Desktop                 # ~ = 用户目录
   - C:/Tools
 
-# ── 文件类型 ──
+# 文件类型
 file_types:
   - .exe
   - .lnk
   - .bat
   - .ps1
 
-# ── 自定义命令 ──
+# 自定义命令
 commands:
   - keyword: cmd
     name: 命令提示符
@@ -171,28 +171,28 @@ commands:
     icon: "⚡"
     admin: false
 
-# ── 书签 ──
+# 书签
 bookmarks:
   - keyword: gh
     name: GitHub
     url: https://github.com
     icon: "🔗"
 
-# ── 文件夹 ──
+# 文件夹
 folders:
   - keyword: desk
     name: 桌面
     path: ~/Desktop
     icon: "📁"
 
-# ── 搜索引擎 ──
+# 搜索引擎
 search_engines:
   - keyword: g
     name: Google
     url: https://www.google.com/search?q={query}
     icon: "🔍"
 
-# ── 优先级 ──
+# 优先级
 priority:
   types:                      # 越靠前越先显示
     - command
