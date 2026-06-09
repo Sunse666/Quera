@@ -48,7 +48,6 @@ public class SingleInstanceService : ISingleInstanceService, IDisposable
         }
         catch (WaitHandleCannotBeOpenedException)
         {
-            // First instance hasn't created the signal yet
         }
     }
 

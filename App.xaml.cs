@@ -10,6 +10,14 @@ public partial class App : Application
 
     protected override void OnStartup(StartupEventArgs e)
     {
+        AppDomain.CurrentDomain.UnhandledException += (_, ex) =>
+            Debug.WriteLine($"Unhandled: {ex.ExceptionObject}");
+        DispatcherUnhandledException += (_, ex) =>
+        {
+            Debug.WriteLine($"Dispatcher: {ex.Exception}");
+            ex.Handled = true;
+        };
+
         base.OnStartup(e);
 
         _host = Host.CreateDefaultBuilder()
@@ -50,7 +58,6 @@ public partial class App : Application
         var window = _host.Services.GetRequiredService<MainWindow>();
         trayService.Create(window);
 
-        // Must show window first to create HWND, then register hotkey
         window.Show();
 
         var hotkeyService = _host.Services.GetRequiredService<IHotkeyService>();
@@ -58,7 +65,11 @@ public partial class App : Application
         hotkeyService.Register(cfg.Hotkey);
 
         var indexService = _host.Services.GetRequiredService<IFileIndexService>();
-        _ = indexService.BuildCacheAsync(cfg.SearchPaths, cfg.FileTypes);
+        _ = Task.Run(async () =>
+        {
+            try { await indexService.BuildCacheAsync(cfg.SearchPaths, cfg.FileTypes); }
+            catch (Exception ex) { Debug.WriteLine($"Index build failed: {ex}"); }
+        });
 
         singleInstance.StartSignalListener(() =>
         {
@@ -70,7 +81,6 @@ public partial class App : Application
             Application.Current.Dispatcher.Invoke(window.ToggleVisibility);
         };
 
-        // Hide to tray after hotkey is registered
         window.Hide();
     }
 

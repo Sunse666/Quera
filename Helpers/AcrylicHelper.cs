@@ -13,7 +13,7 @@ internal static class AcrylicHelper
             int darkMode = 1;
             NativeMethods.DwmSetWindowAttribute(hwnd, NativeMethods.DWMWA_USE_IMMERSIVE_DARK_MODE, ref darkMode, sizeof(int));
 
-            int cornerPreference = 2; // DWMWCP_ROUND
+            int cornerPreference = 2;
             NativeMethods.DwmSetWindowAttribute(hwnd, NativeMethods.DWMWA_WINDOW_CORNER_PREFERENCE, ref cornerPreference, sizeof(int));
         }
     }

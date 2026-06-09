@@ -45,44 +45,59 @@ public partial class MainViewModel : ObservableObject
 
         Task.Delay(80, token).ContinueWith(_ =>
         {
-            if (!token.IsCancellationRequested)
-                System.Windows.Application.Current.Dispatcher.Invoke(() => DoSearch());
+            if (token.IsCancellationRequested) return;
+            try
+            {
+                var app = System.Windows.Application.Current;
+                app?.Dispatcher.Invoke(() => DoSearch());
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Search error: {ex}");
+            }
         }, token, TaskContinuationOptions.OnlyOnRanToCompletion, TaskScheduler.Default);
     }
 
     private void DoSearch()
     {
-        if (!_fileIndexService.CacheBuilt)
+        try
         {
-            Results.Clear();
-            SelectedIndex = 0;
-            TotalCount = 0;
-            StatusText = "正在索引...";
-            return;
-        }
+            if (!_fileIndexService.CacheBuilt)
+            {
+                Results.Clear();
+                SelectedIndex = 0;
+                TotalCount = 0;
+                StatusText = "正在索引...";
+                return;
+            }
 
-        if (string.IsNullOrWhiteSpace(SearchText))
+            if (string.IsNullOrWhiteSpace(SearchText))
+            {
+                Results.Clear();
+                SelectedIndex = 0;
+                TotalCount = 0;
+                StatusText = "就绪";
+                return;
+            }
+
+            var container = _searchService.Search(SearchText, _configService.Current, _configService.Current.MaxResults);
+
+            Results.Clear();
+            foreach (var item in container.Items)
+                Results.Add(item);
+
+            TotalCount = container.TotalCount;
+            SelectedIndex = 0;
+
+            if (container.TotalCount > container.Items.Count)
+                StatusText = $"{container.Items.Count}/{container.TotalCount} 个结果";
+            else
+                StatusText = $"{container.Items.Count} 个结果";
+        }
+        catch (Exception ex)
         {
-            Results.Clear();
-            SelectedIndex = 0;
-            TotalCount = 0;
-            StatusText = "就绪";
-            return;
+            Debug.WriteLine($"DoSearch error: {ex}");
         }
-
-        var container = _searchService.Search(SearchText, _configService.Current, _configService.Current.MaxResults);
-
-        Results.Clear();
-        foreach (var item in container.Items)
-            Results.Add(item);
-
-        TotalCount = container.TotalCount;
-        SelectedIndex = 0;
-
-        if (container.TotalCount > container.Items.Count)
-            StatusText = $"{container.Items.Count}/{container.TotalCount} 个结果";
-        else
-            StatusText = $"{container.Items.Count} 个结果";
     }
 
     [RelayCommand]

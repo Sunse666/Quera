@@ -29,33 +29,7 @@ public class FileIndexService : IFileIndexService
             {
                 var expanded = _configService.ExpandPath(rawPath);
                 if (!Directory.Exists(expanded)) continue;
-
-                try
-                {
-                    foreach (var file in Directory.EnumerateFiles(expanded, "*.*", SearchOption.AllDirectories))
-                    {
-                        var ext = Path.GetExtension(file).ToLowerInvariant();
-                        if (!ext.StartsWith(".")) ext = "." + ext;
-                        if (!typeSet.Contains(ext)) continue;
-
-                        results.Add(new SearchResult
-                        {
-                            Name = Path.GetFileNameWithoutExtension(file),
-                            Description = file,
-                            Path = file,
-                            Extension = ext,
-                            Type = SearchResultType.File,
-                            Icon = GetFileIcon(ext),
-                            Source = "custom",
-                            SortOrder = 1,
-                            ExtOrder = GetExtOrder(ext)
-                        });
-                    }
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogWarning(ex, "Failed to index path: {Path}", expanded);
-                }
+                ScanDirectory(expanded, typeSet, results);
             }
             return results;
         });
@@ -103,6 +77,37 @@ public class FileIndexService : IFileIndexService
 
         _cache = cache;
         CacheBuilt = true;
+    }
+
+    private static void ScanDirectory(string dir, HashSet<string> typeSet, List<SearchResult> results)
+    {
+        try
+        {
+            foreach (var file in Directory.EnumerateFiles(dir, "*.*"))
+            {
+                var ext = Path.GetExtension(file).ToLowerInvariant();
+                if (!ext.StartsWith(".")) ext = "." + ext;
+                if (!typeSet.Contains(ext)) continue;
+
+                results.Add(new SearchResult
+                {
+                    Name = Path.GetFileNameWithoutExtension(file),
+                    Description = file,
+                    Path = file,
+                    Extension = ext,
+                    Type = SearchResultType.File,
+                    Icon = GetFileIcon(ext),
+                    Source = "custom",
+                    SortOrder = 1,
+                    ExtOrder = GetExtOrder(ext)
+                });
+            }
+
+            foreach (var subDir in Directory.EnumerateDirectories(dir))
+                ScanDirectory(subDir, typeSet, results);
+        }
+        catch (UnauthorizedAccessException) { /* skip inaccessible directories */ }
+        catch (PathTooLongException) { /* skip */ }
     }
 
     private static string GetFileIcon(string ext)

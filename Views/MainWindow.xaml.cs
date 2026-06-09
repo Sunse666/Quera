@@ -45,13 +45,11 @@ public partial class MainWindow : Window
 
     private void OnWindowLoaded(object sender, RoutedEventArgs e)
     {
-        // Handles case when size hasn't changed (e.g., first toggle after hide)
         DeferredCenter();
     }
 
     private void OnWindowSizeChanged(object sender, SizeChangedEventArgs e)
     {
-        // Handles case when content changes size (e.g., results appear/disappear)
         DeferredCenter();
     }
 
@@ -72,7 +70,6 @@ public partial class MainWindow : Window
 
     private void OnResultsChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
     {
-        // WPF auto-sizes via SizeToContent=Height, but we need to re-center
         _needsCenter = true;
     }
 
